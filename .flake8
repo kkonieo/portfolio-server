@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 88
+exclude =
+        .tox,
+        .media,
+        .pytest_cache,
+        htmlcov,
+        tests,
+        .git, 
+        migrations,
+        settings,
+        __pycache__,
+        manage.py
+count = True
