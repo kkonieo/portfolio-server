@@ -2,9 +2,14 @@
 
 name: CI
 
+# 트리거
 on:
   push:
+    branches:
+      - "master"
   pull_request:
+    branches:
+      - "master"
 
 jobs: 
   lint_python:
