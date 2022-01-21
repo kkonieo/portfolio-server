@@ -1,5 +1,5 @@
 """
-Django settings for today-park project.
+Django settings for portfolio-server project.
 
 environment variables:
     SECRET_KEY = "secret key"
