@@ -22,6 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 STATIC_URL = "/staticfiles/"
 STATIC_ROOT = os.path.join(BASE_DIR, ".static")
 
+# media
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, ".media")
+
 # 후행 슬래시 비활성화
 APPEND_SLASH = False
 
@@ -127,7 +131,7 @@ DATABASES = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
+AUTH_USER_MODEL = "user.User"
 # ------------------------------------------------
 # I18n
 # ------------------------------------------------
