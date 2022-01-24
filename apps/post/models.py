@@ -1,56 +1,35 @@
-import os
-import sys
-from fileinput import filename
-from statistics import mode
-
 from django.db import models
 
+from apps.core.models import Image, TimeStampModel
 from apps.user.models import User
 
 # Create your models here.
 
 
-class Post(models.Model):
+class Post(TimeStampModel):
     """
     Post 모델
     """
 
     email = models.ForeignKey(
-        User, related_name="post_author", on_delete=models.CASCADE
+        User, related_name="post_author", on_delete=models.CASCADE, verbose_name="이메일"
     )
 
-    title = models.CharField(blank=False, max_length=255)
+    title = models.CharField(max_length=255, verbose_name="제목")
 
-    content = models.TextField(blank=False)
+    content = models.TextField(verbose_name="내용")
 
-    likes = models.ManyToManyField(User, related_name="post_likes", blank=True)
+    thumbnail = models.OneToOneField(
+        Image, on_delete=models.CASCADE, verbose_name="썸네일이미지"
+    )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    liker = models.ManyToManyField(
+        User, blank=True, related_name="post_liker", verbose_name="좋아요누른사람"
+    )
+
+    class Meta:
+        verbose_name_plural = "게시글"
+        db_table = "post"
 
     def __str__(self):
         return self.title
-
-
-# class Post_files(Post):
-#     """
-#     Post files 모델
-#     """
-
-#     id = models.ForeignKey(
-#         Post.id, related_name="post_files", on_delete=models.CASCADE
-#     )  # noqa: E501
-#     filename = models.FileField(
-#         upload_to=file_upload_path, null=True
-#     )  # 어떻게 작성해야 될지 모르겠음..
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now_add=True)
-
-
-# class Post_hashtags(Post):
-#     """
-#     Post hashtags 모델
-#     """
-
-#     id = models.ManyToManyField(int(11), auto_created=True)
-#     name = models.CharField(max_length=200, null=True)
