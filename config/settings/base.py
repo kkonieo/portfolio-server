@@ -79,7 +79,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "apps.user",
     "apps.core",
-    "apps.portfolio",
+    "apps.project",
     "apps.post",
     "apps.comment",
 ]
