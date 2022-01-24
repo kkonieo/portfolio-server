@@ -26,5 +26,11 @@ class Project(TimeStampModel):
         related_name="project_liker",
     )
 
+    # TODO: keywords(기술 스택 해시태그) 추가해야 함.
+
+    class Meta:
+        verbose_name_plural = "프로젝트"
+        db_table = "project"
+
     def __str__(self):
         return self.title
