@@ -23,8 +23,10 @@ STATIC_URL = "/staticfiles/"
 STATIC_ROOT = os.path.join(BASE_DIR, ".static")
 
 # media
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, ".media")
+MEDIA_URL = "/media/"  # 웹 URL 을 통해 첨부파일에 점근할 수 있는 URL 경로입니다.
+MEDIA_ROOT = os.path.join(BASE_DIR, ".media")  # 실제 파일이 저장될 경로입니다.
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = "2621440"  # 파일업로드 사이즈의 최대값입니다. 기본값은 2.5MB 입니다.
 
 # 후행 슬래시 비활성화
 APPEND_SLASH = False
