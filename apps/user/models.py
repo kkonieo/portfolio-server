@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 from django.db import models
 
 from apps.core.models import Image, TimeStampModel
+from apps.skill.models import Skill
 from apps.user.validators import NameValidator
 
 
@@ -61,6 +62,8 @@ class User(AbstractBaseUser, TimeStampModel, PermissionsMixin):
     )
     introduction = models.TextField(verbose_name="자기소개", null=True)
 
+    skills = models.ManyToManyField(Skill, verbose_name="기술 목록", related_name="users")
+
     objects = CustomUserManager()
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
@@ -69,5 +72,5 @@ class User(AbstractBaseUser, TimeStampModel, PermissionsMixin):
         verbose_name_plural = "사용자"
         db_table = "user"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.email

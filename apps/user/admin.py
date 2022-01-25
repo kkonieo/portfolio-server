@@ -11,7 +11,16 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (
             _("Personal info"),
-            {"fields": ("name", "email", "password", "user_image", "introduction")},
+            {
+                "fields": (
+                    "name",
+                    "email",
+                    "password",
+                    "user_image",
+                    "introduction",
+                    "skills",
+                )
+            },
         ),
         (
             _("Permissions"),
@@ -40,6 +49,8 @@ class CustomUserAdmin(UserAdmin):
         ),
     )
 
+    # manytomany field 추가 삭제
+    filter_horizontal = ("skills",)
     # 읽기 전용 필드
     readonly_fields = ("created_at", "updated_at")
     # List
