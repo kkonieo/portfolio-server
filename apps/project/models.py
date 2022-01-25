@@ -11,11 +11,11 @@ class Project(TimeStampModel):
 
     title = models.CharField(verbose_name="프로젝트 제목", max_length=40)
     content = models.TextField(verbose_name="프로젝트 내용")
-    user = models.ForeignKey(
+    author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        verbose_name="사용자",
+        verbose_name="프로젝트 작성자",
         on_delete=models.CASCADE,
-        related_name="project_user",
+        related_name="project_author",
     )
     thumbnail = models.OneToOneField(
         Image, verbose_name="프로젝트 썸네일", on_delete=models.CASCADE
