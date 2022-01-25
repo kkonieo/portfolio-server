@@ -1,10 +1,9 @@
-from tabnanny import verbose
-
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.db import models
 
 from apps.core.models import Image, TimeStampModel
+from apps.core.utility import generate_random_string
 from apps.skill.models import Skill
 from apps.user.validators import NameValidator
 
@@ -55,14 +54,24 @@ class User(AbstractBaseUser, TimeStampModel, PermissionsMixin):
             NameValidator(),
         ],
     )
+
+    slug = models.CharField(
+        verbose_name="프로필 Slug",
+        max_length=20,
+        unique=True,
+        default=generate_random_string(15),
+    )
+
     is_staff = models.BooleanField(verbose_name="is staff", default=False)
 
     user_image = models.OneToOneField(
-        Image, verbose_name="사용자 이미지", on_delete=models.CASCADE, null=True
+        Image, verbose_name="사용자 이미지", on_delete=models.CASCADE, blank=True, null=True
     )
-    introduction = models.TextField(verbose_name="자기소개", null=True)
+    introduction = models.TextField(verbose_name="자기소개", blank=True, null=True)
 
-    skills = models.ManyToManyField(Skill, verbose_name="기술 목록", related_name="users")
+    skills = models.ManyToManyField(
+        Skill, verbose_name="기술 목록", related_name="users", blank=True
+    )
 
     objects = CustomUserManager()
     USERNAME_FIELD = "email"
