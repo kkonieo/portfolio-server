@@ -59,20 +59,32 @@ class User(AbstractBaseUser, TimeStampModel, PermissionsMixin):
         verbose_name="프로필 Slug",
         max_length=20,
         unique=True,
-        default=generate_random_string(15),
+        default=generate_random_string,
     )
 
-    is_staff = models.BooleanField(verbose_name="is staff", default=False)
-
+    is_staff = models.BooleanField(
+        verbose_name="is staff",
+        default=False,
+    )
     user_image = models.OneToOneField(
-        Image, verbose_name="사용자 이미지", on_delete=models.CASCADE, blank=True, null=True
+        Image,
+        verbose_name="사용자 이미지",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
     )
-    introduction = models.TextField(verbose_name="자기소개", blank=True, null=True)
+    introduction = models.TextField(
+        verbose_name="자기소개",
+        blank=True,
+        null=True,
+    )
 
     skills = models.ManyToManyField(
-        Skill, verbose_name="기술 목록", related_name="users", blank=True
+        Skill,
+        verbose_name="기술 목록",
+        related_name="users",
+        blank=True,
     )
-
     objects = CustomUserManager()
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
@@ -83,3 +95,20 @@ class User(AbstractBaseUser, TimeStampModel, PermissionsMixin):
 
     def __str__(self) -> str:
         return self.email
+
+
+class Link(TimeStampModel):
+    user = models.ForeignKey(
+        User,
+        verbose_name="사용자",
+        on_delete=models.CASCADE,
+        related_name="link_user",
+    )
+    source = models.URLField(verbose_name="링크 URL", max_length=120)
+
+    class Meta:
+        verbose_name_plural = "링크"
+        db_table = "link"
+
+    def __str__(self) -> str:
+        return self.source

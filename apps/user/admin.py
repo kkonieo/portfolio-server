@@ -2,7 +2,25 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from .models import User
+from .models import Link, User
+
+
+@admin.register(Link)
+class LinkAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (_("정보"), {"fields": ("source", "user")}),
+        (
+            _("Date/time"),
+            {
+                "fields": ("created_at", "updated_at"),
+            },
+        ),
+    )
+
+    readonly_fields = ("created_at", "updated_at")
+    list_display = ("source", "user", "created_at")
+    search_fields = ("source", "user")
+    ordering = ("source", "user")
 
 
 @admin.register(User)
@@ -32,7 +50,7 @@ class CustomUserAdmin(UserAdmin):
                 ),
             },
         ),
-        (_("Important dates"), {"fields": ("last_login", "created_at", "updated_at")}),
+        (_("Date/time"), {"fields": ("last_login", "created_at", "updated_at")}),
     )
 
     add_fieldsets = (
