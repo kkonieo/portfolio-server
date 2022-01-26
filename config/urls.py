@@ -18,10 +18,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-# from apps.project import urls
-
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("user/", include("apps.user.urls")),
     path("", include("apps.project.urls")),
 ]
 
