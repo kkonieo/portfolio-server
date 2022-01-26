@@ -7,6 +7,7 @@ environment variables:
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 env = os.environ
@@ -27,6 +28,8 @@ MEDIA_URL = "/media/"  # 웹 URL 을 통해 첨부파일에 점근할 수 있는
 MEDIA_ROOT = os.path.join(BASE_DIR, ".media")  # 실제 파일이 저장될 경로입니다.
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 파일업로드 사이즈의 최대값입니다. 기본값은 2.5MB 입니다.
+
+FIXTURE_DIRS = ["fixtures"]
 
 # 후행 슬래시 비활성화
 APPEND_SLASH = False
@@ -73,15 +76,18 @@ DJANGO_APPS = [
 # 써드파티 라이브러리
 THIRD_PARTY_APPS = [
     "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",  # token blacklist
 ]
 
 # 프로젝트에서 생성한 앱
 LOCAL_APPS = [
     "apps.user",
     "apps.core",
-    "apps.portfolio",
+    "apps.project",
     "apps.post",
     "apps.comment",
+    "apps.skill",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -145,3 +151,35 @@ TIME_ZONE = "Asia/Seoul"
 USE_I18N = True
 
 USE_TZ = True
+
+# ------------------------------------------------
+# Thrid Party
+# ------------------------------------------------
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
+
+# DRF simplejwt 설정
+# https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=12),  # access token lifetime
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # refresh token lifetime
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "email",  # user PK
+    "USER_ID_CLAIM": "user_id",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(hours=1),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+}

@@ -1,11 +1,11 @@
-from tabnanny import verbose
-
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.db import models
 from pyexpat import model
 
 from apps.core.models import Image, TimeStampModel
+from apps.core.utility import generate_random_string
+from apps.skill.models import Skill
 from apps.user.validators import NameValidator
 
 
@@ -55,13 +55,37 @@ class User(AbstractBaseUser, TimeStampModel, PermissionsMixin):
             NameValidator(),
         ],
     )
-    is_staff = models.BooleanField(verbose_name="is staff", default=False)
 
-    user_image = models.OneToOneField(
-        Image, verbose_name="사용자 이미지", on_delete=models.CASCADE, null=True
+    slug = models.CharField(
+        verbose_name="프로필 Slug",
+        max_length=20,
+        unique=True,
+        default=generate_random_string,
     )
-    introduction = models.TextField(verbose_name="자기소개", null=True)
 
+    is_staff = models.BooleanField(
+        verbose_name="is staff",
+        default=False,
+    )
+    user_image = models.OneToOneField(
+        Image,
+        verbose_name="사용자 이미지",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    introduction = models.TextField(
+        verbose_name="자기소개",
+        blank=True,
+        null=True,
+    )
+
+    skills = models.ManyToManyField(
+        Skill,
+        verbose_name="기술 목록",
+        related_name="users",
+        blank=True,
+    )
     objects = CustomUserManager()
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
@@ -70,5 +94,22 @@ class User(AbstractBaseUser, TimeStampModel, PermissionsMixin):
         verbose_name_plural = "사용자"
         db_table = "user"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.email
+
+
+class Link(TimeStampModel):
+    user = models.ForeignKey(
+        User,
+        verbose_name="사용자",
+        on_delete=models.CASCADE,
+        related_name="link_user",
+    )
+    source = models.URLField(verbose_name="링크 URL", max_length=120)
+
+    class Meta:
+        verbose_name_plural = "링크"
+        db_table = "link"
+
+    def __str__(self) -> str:
+        return self.source
