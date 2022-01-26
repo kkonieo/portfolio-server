@@ -29,10 +29,11 @@ build-backend = "poetry.core.masonry.api"
 
 # isort 설정
 [tool.isort]
+profile = "black"
 line_length = 88 
 skip_glob = "**/migrations/*.py"
 include_trailing_comma = true
-use_parentheses = true
+use_parentheses = false
 
 # black 설정
 [tool.black]
