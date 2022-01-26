@@ -11,7 +11,7 @@ class Post(TimeStampModel):
     Post 모델
     """
 
-    email = models.ForeignKey(
+    author = models.ForeignKey(
         User, related_name="post_author", on_delete=models.CASCADE, verbose_name="이메일"
     )
 
