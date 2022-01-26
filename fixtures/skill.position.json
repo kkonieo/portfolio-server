@@ -1,0 +1,142 @@
+[
+    {
+      "model": "skill.position",
+      "pk": 1,
+      "fields": {
+        "name": "서버/백엔드"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 2,
+      "fields": {
+        "name": "프론트엔드"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 3,
+      "fields": {
+        "name": "웹 풀스택"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 4,
+      "fields": {
+        "name": "안드로이드 앱"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 5,
+      "fields": {
+        "name": "아이폰 앱"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 6,
+      "fields": {
+        "name": "머신러닝"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 7,
+      "fields": {
+        "name": "인공지능 (AI)"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 8,
+      "fields": {
+        "name": "데이터 엔지니어"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 9,
+      "fields": {
+        "name": "모바일 게임"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 10,
+      "fields": {
+        "name": "게임 클라이언트"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 11,
+      "fields": {
+        "name": "게임 서버"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 12,
+      "fields": {
+        "name": "시스템/네트워크"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 13,
+      "fields": {
+        "name": "시스템 소프트웨어"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 14,
+      "fields": {
+        "name": "인터넷 보안"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 15,
+      "fields": {
+        "name": "임베디드 소프트웨어"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 16,
+      "fields": {
+        "name": "로보틱스 미들웨어"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 17,
+      "fields": {
+        "name": "QA"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 18,
+      "fields": {
+        "name": "사물인터넷 (IoT)"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 19,
+      "fields": {
+        "name": "응용 프로그램"
+      }
+    },
+    {
+      "model": "skill.position",
+      "pk": 20,
+      "fields": {
+        "name": "블록체인"
+      }
+    }
+  ]
