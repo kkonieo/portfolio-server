@@ -16,4 +16,3 @@ class PostList(APIView):
         # 여러 개의 객체를 serialization하기 위해 many=True로 설정
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
-
