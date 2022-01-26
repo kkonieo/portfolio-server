@@ -1,8 +1,9 @@
 from django.contrib import admin
 
-from .models import Skill
+from .models import Position, Skill
 
 
+@admin.register(Position)
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
     # List
