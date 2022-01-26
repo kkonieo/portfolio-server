@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = "기본 기술스택 데이터를 추가합니다."
+    help = "미리 정의된 기본 데이터를 추가합니다."
 
     def handle(self, *args, **options):
 
