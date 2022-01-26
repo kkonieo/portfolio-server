@@ -3,6 +3,7 @@ from tabnanny import verbose
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.db import models
+from pyexpat import model
 
 from apps.core.models import Image, TimeStampModel
 from apps.user.validators import NameValidator
