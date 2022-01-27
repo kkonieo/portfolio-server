@@ -5,7 +5,7 @@ from pyexpat import model
 
 from apps.core.models import Image, TimeStampModel
 from apps.core.utility import generate_random_string
-from apps.skill.models import Skill
+from apps.skill.models import Position, Skill
 from apps.user.validators import NameValidator
 
 
@@ -79,13 +79,19 @@ class User(AbstractBaseUser, TimeStampModel, PermissionsMixin):
         blank=True,
         null=True,
     )
-
+    positions = models.ManyToManyField(
+        Position,
+        verbose_name="포지션",
+        related_name="users",
+        blank=True,
+    )
     skills = models.ManyToManyField(
         Skill,
         verbose_name="기술 목록",
         related_name="users",
         blank=True,
     )
+
     objects = CustomUserManager()
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]

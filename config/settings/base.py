@@ -29,8 +29,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, ".media")  # 실제 파일이 저장될 경�
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 파일업로드 사이즈의 최대값입니다. 기본값은 2.5MB 입니다.
 
-FIXTURE_DIRS = ["fixtures"]
-
 # 후행 슬래시 비활성화
 APPEND_SLASH = False
 

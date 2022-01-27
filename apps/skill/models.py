@@ -12,3 +12,12 @@ class Skill(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class Position(models.Model):
+
+    name = models.CharField(verbose_name="포지션", max_length=30, unique=True)
+
+    class Meta:
+        verbose_name_plural = "포지션"
+        db_table = "position"
