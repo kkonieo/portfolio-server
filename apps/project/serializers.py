@@ -1,6 +1,16 @@
 from rest_framework import serializers
 
+from apps.user.models import User
+
 from .models import Project
+
+
+class LikerSerializer(serializers.ModelSerializer):
+    """ """
+
+    class Meta:
+        model = User
+        fields = ("slug", "name")
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -9,19 +19,11 @@ class ProjectSerializer(serializers.ModelSerializer):
     """
 
     thumbnail = serializers.ImageField(source="thumbnail.source")
+    likers = LikerSerializer(source="liker", many=True)
 
     class Meta:
         model = Project
-        fields = "__all__"
-
-
-class ProjectCardSerializer(ProjectSerializer):
-    """
-    프로젝트의 제목, 썸네일
-    """
-
-    class Meta(ProjectSerializer.Meta):
-        fields = ("title", "thumbnail")
+        fields = ("title", "content", "thumbnail", "likers")
 
 
 class ProjectSummarySerializer(ProjectSerializer):

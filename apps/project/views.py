@@ -4,14 +4,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Project
-from .serializers import (
-    ProjectCardSerializer,
-    ProjectSerializer,
-    ProjectSummarySerializer,
-)
+from .serializers import ProjectSerializer, ProjectSummarySerializer
 
 
-class BaseProjectList(APIView):
+class BaseProjectsView(APIView):
     """
     Base Project List class
     """
@@ -22,16 +18,29 @@ class BaseProjectList(APIView):
         return self.request.user
 
     def get(self, request):
+
+        query = request.GET
+
+        user_slug = query.get("slug")
+        short = query.get("short").lower()
+
+        if short == "true":
+            self.serializer = ProjectSummarySerializer
+
         # TODO: fix temp user to real user
-        user = "hmkim199@gmail.com"
+
         # user = self.get_user()
-        projects = Project.objects.filter(author=user).order_by("-created_at")
+
+        # 특정 유저의 프로젝트 목록 필터링
+        projects = Project.objects.filter(author__slug=user_slug).order_by(
+            "-created_at"
+        )
         serializer = self.serializer(projects, many=True)
 
         return Response(serializer.data)
 
 
-class ProjectList(BaseProjectList):
+class ProjectsView(BaseProjectsView):
     def post(self, request):
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
@@ -42,17 +51,7 @@ class ProjectList(BaseProjectList):
     # TODO: put, delete 함수도 작성
 
 
-class ProjectCardList(BaseProjectList):
-    """
-    Project 카드 리스트
-
-    프로젝트의 제목, 썸네일 리스트 최신순으로 반환합니다.
-    """
-
-    serializer = ProjectCardSerializer
-
-
-class ProjectSummaryList(BaseProjectList):
+class ProjectsSummaryView(BaseProjectsView):
     """
     Project 요약 리스트
 
