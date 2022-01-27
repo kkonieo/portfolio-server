@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from .models import Position, Skill
+from .models import Position, Tech
 
 
 @admin.register(Position)
-@admin.register(Skill)
-class SkillAdmin(admin.ModelAdmin):
+@admin.register(Tech)
+class TechAdmin(admin.ModelAdmin):
     # List
     list_display = ("name",)
     # 검색 필터

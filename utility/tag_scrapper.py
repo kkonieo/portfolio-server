@@ -30,7 +30,7 @@ for query in queries:
 # make json data
 json_data = []
 for idx, tag in enumerate(data):
-    json_data.append({"model": "skill.skill", "pk": idx + 1, "fields": {"name": tag}})
+    json_data.append({"model": "tag.tech", "pk": idx + 1, "fields": {"name": tag}})
 
 # save
 f = open("output.json", "w")
