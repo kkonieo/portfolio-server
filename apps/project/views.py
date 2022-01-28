@@ -14,25 +14,23 @@ class BaseProjectsView(APIView):
 
     serializer = ProjectSerializer
 
-    def get_user(self):
-        return self.request.user
-
-    def get(self, request):
-
-        query = request.GET
-
-        user_slug = query.get("slug")
-        short = query.get("short").lower()
+    def set_to_show_summary(self, query):
+        short = query.get("short")
+        if short:
+            short = short.lower()
 
         if short == "true":
             self.serializer = ProjectSummarySerializer
 
-        # TODO: fix temp user to real user
+    def interprete_query(self, query):
+        self.user_slug = query.get("slug")
+        self.set_to_show_summary(query)
 
-        # user = self.get_user()
+    def get(self, request):
+        self.interprete_query(request.GET)
 
-        # 특정 유저의 프로젝트 목록 필터링
-        projects = Project.objects.filter(author__slug=user_slug).order_by(
+        # 특정 유저의 프로젝트 목록 필터링. 최신 순
+        projects = Project.objects.filter(author__slug=self.user_slug).order_by(
             "-created_at"
         )
         serializer = self.serializer(projects, many=True)
