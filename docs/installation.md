@@ -67,3 +67,11 @@ $ export ALLOWED_HOSTS="example-domain.com,example-domain2.com"
 (가상환경) $ python manage.py migrate
 (가상환경) $ python manage.py runserver
 ```
+
+### 4.1 기본 데이터(fixtures) 불러오기
+
+아래 명령어를 입력하여 미리 정의된 기술, 포지션 데이터를 DB에 삽입할 수 있습니다.
+
+```bash
+(가상환경) $ python manage.py initdata
+```
