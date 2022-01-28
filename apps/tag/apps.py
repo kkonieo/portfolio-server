@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class SkillConfig(AppConfig):
+class TechConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.skill"
+    name = "apps.tag"
