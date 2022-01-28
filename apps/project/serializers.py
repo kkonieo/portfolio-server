@@ -8,7 +8,9 @@ from .models import Project
 
 
 class LikerSerializer(serializers.ModelSerializer):
-    """ """
+    """
+    좋아요 누른 사람 slug, name
+    """
 
     class Meta:
         model = User
