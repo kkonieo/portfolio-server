@@ -28,7 +28,7 @@ class Post(TimeStampModel):
     )
 
     liker = models.ManyToManyField(
-        User, blank=True, related_name="post_liker", verbose_name="좋아요누른사람", null=True
+        User, blank=True, related_name="post_liker", verbose_name="좋아요누른사람"
     )
 
     class Meta:

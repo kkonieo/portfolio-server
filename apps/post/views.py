@@ -32,10 +32,15 @@ class PostList(APIView):
         포스트 생성 뷰
         """
         # request.data는 사용자의 입력 데이터
+        print("1 - acting")
         serializer = PostSerializer(data=request.data)
+        print("2 - acting")
         if serializer.is_valid():
+            print("3.1 - acting")
             serializer.save()
+            print("3.2 - acting")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print("4 - acting")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
