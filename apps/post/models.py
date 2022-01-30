@@ -12,7 +12,11 @@ class Post(TimeStampModel):
     """
 
     author = models.ForeignKey(
-        User, related_name="post_author", on_delete=models.CASCADE, verbose_name="이메일"
+        User,
+        related_name="post_author",
+        on_delete=models.CASCADE,
+        verbose_name="이메일",
+        null=True,
     )
 
     title = models.CharField(max_length=255, verbose_name="제목")
@@ -24,7 +28,7 @@ class Post(TimeStampModel):
     )
 
     liker = models.ManyToManyField(
-        User, blank=True, related_name="post_liker", verbose_name="좋아요누른사람"
+        User, blank=True, related_name="post_liker", verbose_name="좋아요누른사람", null=True
     )
 
     class Meta:

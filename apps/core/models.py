@@ -23,7 +23,9 @@ class TimeStampModel(models.Model):
 
 class Image(TimeStampModel):
 
-    source = models.ImageField(verbose_name="이미지", upload_to=get_uuid_path)
+    source = models.ImageField(
+        verbose_name="이미지", upload_to=get_uuid_path, blank=True, null=True
+    )
 
     class Meta:
         verbose_name_plural = "이미지"
