@@ -41,6 +41,10 @@ class ProjectSerializer(serializers.ModelSerializer):
             "likers",
         )
 
+    # def create(self, validated_data):
+
+    #     return super().create(validated_data)
+
 
 class ProjectSummarySerializer(ProjectSerializer):
     """

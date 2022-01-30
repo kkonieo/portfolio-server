@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Project
-from .serializers import ImageSerializer, ProjectSerializer, ProjectSummarySerializer
+from .serializers import ProjectSerializer, ProjectSummarySerializer
 
 
 class BaseProjectsView(APIView):
@@ -68,15 +68,20 @@ class BaseProjectsView(APIView):
 
 class ProjectsView(BaseProjectsView):
     def post(self, request):
+        """
+        새 프로젝트 post
+        title, content, thumbnail, tech_stack
+        """
         user = self.request.user
         if not user:
             return Response(status=status.HTTP_403_FORBIDDEN)
         serializer = ProjectSerializer(data=request.data, partial=True)
-        
+
         if serializer.is_valid():
             validated_data = serializer.validated_data
 
             project = Project()
+            project.author = user
             project.title = validated_data["title"]
             project.tech_stack = validated_data["tech_stack"]
             project.thumbnail = validated_data["thumbnail"]
@@ -87,7 +92,11 @@ class ProjectsView(BaseProjectsView):
             return Response({"detail": "새 프로젝트 생성 완료"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # TODO: put, delete 함수도 작성
+    def put(self, request):
+        return
+
+    def delete(self, request):
+        return
 
 
 class ProjectsSummaryView(BaseProjectsView):

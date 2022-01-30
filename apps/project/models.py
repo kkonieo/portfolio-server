@@ -11,22 +11,20 @@ class Project(TimeStampModel):
     """
 
     """
-    
     request body
     {
         "title": "제목",
         "content": "내용",
         "thumbnail": "/media/ffewfewafaewfeaw_image.jpg",
         "tech_stack": [
-            1, 
+            1,
             52
-        ] # tech pk 넣기 
+        ] # tech pk 넣기
     }
     # view or serializer 에서 직접 처리
     project.author = self.request.user
 
     liker ( read_only )
-     
     """
 
     title = models.CharField(verbose_name="프로젝트 제목", max_length=40)
