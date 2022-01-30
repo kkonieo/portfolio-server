@@ -1,7 +1,11 @@
+from dataclasses import field
+from statistics import mode
+
 from django.utils.html import strip_tags
 from django.utils.text import normalize_newlines
 from rest_framework import serializers
 
+from apps.core.models import Image
 from apps.user.models import User
 
 from .models import Project
@@ -27,7 +31,15 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ("title", "content", "thumbnail", "likers")
+        fields = (
+            "id",
+            "author",
+            "title",
+            "content",
+            "thumbnail",
+            "tech_stack",
+            "likers",
+        )
 
 
 class ProjectSummarySerializer(ProjectSerializer):
@@ -44,4 +56,4 @@ class ProjectSummarySerializer(ProjectSerializer):
         return strip_string[:100]
 
     class Meta(ProjectSerializer.Meta):
-        fields = ("title", "thumbnail", "content")
+        fields = ("id", "title", "thumbnail", "content")
