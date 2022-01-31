@@ -28,12 +28,13 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     thumbnail = serializers.ImageField(source="thumbnail.source")
     likers = LikerSerializer(source="liker", many=True)
+    user_slug = serializers.CharField(source="author.slug", read_only=True)
 
     class Meta:
         model = Project
         fields = (
             "id",
-            "author",
+            "user_slug",
             "title",
             "content",
             "thumbnail",

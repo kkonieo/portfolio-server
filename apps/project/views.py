@@ -17,9 +17,9 @@ class BaseProjectsView(APIView):
     serializer = ProjectSerializer
     count = 10
     page = 1
-    # permission_classes = [
-    #     IsAuthenticatedOrReadOnly,
-    # ]
+    permission_classes = [
+        IsAuthenticatedOrReadOnly,
+    ]
 
     def set_to_show_summary(self, query):
         short = query.get("short")
@@ -69,13 +69,13 @@ class BaseProjectsView(APIView):
 class ProjectsView(BaseProjectsView):
     def post(self, request):
         """
-        새 프로젝트 post
+        새 프로젝트 생성
         title, content, thumbnail, tech_stack
         """
         user = self.request.user
         if not user:
             return Response(status=status.HTTP_403_FORBIDDEN)
-        serializer = ProjectSerializer(data=request.data, partial=True)
+        serializer = ProjectSerializer(data=request.data)
 
         if serializer.is_valid():
             validated_data = serializer.validated_data
@@ -92,10 +92,28 @@ class ProjectsView(BaseProjectsView):
             return Response({"detail": "새 프로젝트 생성 완료"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ProjectView(APIView):
+    def get(self, request, project_id):
+        """
+        특정 프로젝트 조회.
+        """
+        # TODO: content strip 적용해야함.
+        project = Project.objects.filter(pk=project_id)
+        serializer = ProjectSerializer(project, many=True)
+
+        return Response(serializer.data)
+
     def put(self, request):
+        """
+        특정 프로젝트 수정
+        """
         return
 
     def delete(self, request):
+        """
+        특정 프로젝트 삭제
+        """
         return
 
 
