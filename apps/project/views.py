@@ -1,5 +1,4 @@
 from django.core.paginator import Paginator
-from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -105,17 +104,11 @@ class ProjectView(APIView):
                 return True
         return False
 
-    def get_object(self, project_id):
-        try:
-            return Project.objects.get(pk=project_id)
-        except Project.DoesNotExist:
-            raise Http404
-
     def get(self, request, project_id):
         """
         특정 프로젝트 조회.
         """
-        project = self.get_object(project_id)
+        project = get_object_or_404(Project, project_id)
         serializer = ProjectSerializer(project, partial=True)
 
         return Response(serializer.data)
@@ -127,30 +120,22 @@ class ProjectView(APIView):
         # TODO: 썸네일 방식 정해지면 post와 함께 수정 및 추가하기
 
         # 수정 요청한 project가 로그인 한 사용자 소유인지 확인
-        project = self.get_object(project_id)
+        project = get_object_or_404(Project, project_id)
         if not self.is_owner(request, project):
             return Response(status=status.HTTP_403_FORBIDDEN)
-        # request.data로 기존 project 상세 정보 모두 교체하기
 
+        # TODO: request.data로 기존 project 상세 정보 모두 교체하기
+
+        project.save()
         return
 
     def delete(self, request, project_id):
         """
         특정 프로젝트 삭제
         """
-        project = self.get_object(project_id)
+        project = get_object_or_404(Project, project_id)
         if not self.is_owner(request, project):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         project.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class ProjectsSummaryView(BaseProjectsView):
-    """
-    Project 요약 리스트
-
-    프로젝트의 제목, 썸네일, 내용
-    """
-
-    serializer = ProjectSummarySerializer
