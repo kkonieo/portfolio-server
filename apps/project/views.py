@@ -1,11 +1,16 @@
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Project
-from .serializers import ProjectSerializer, ProjectSummarySerializer
+from .serializers import (
+    ProjectSerializer,
+    ProjectSummarySerializer,
+    RawProjectSerializer,
+)
 
 
 class BaseProjectsView(APIView):
@@ -13,9 +18,12 @@ class BaseProjectsView(APIView):
     Base Project List class
     """
 
-    serializer = ProjectSerializer
+    serializer = RawProjectSerializer
     count = 10
     page = 1
+    permission_classes = [
+        IsAuthenticatedOrReadOnly,
+    ]
 
     def set_to_show_summary(self, query):
         short = query.get("short")
@@ -64,20 +72,76 @@ class BaseProjectsView(APIView):
 
 class ProjectsView(BaseProjectsView):
     def post(self, request):
-        serializer = ProjectSerializer(data=request.data)
+        """
+        새 프로젝트 생성
+        title, content, thumbnail, tech_stack
+        """
+        user = self.request.user
+        if not user:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        serializer = RawProjectSerializer(data=request.data)
+
         if serializer.is_valid():
-            serializer.save()  # 저장
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            validated_data = serializer.validated_data
+
+            project = Project()
+            project.author = user
+            project.title = validated_data["title"]
+            project.tech_stack = validated_data["tech_stack"]
+            project.thumbnail = validated_data["thumbnail"]
+            project.content = validated_data["content"]
+
+            project.save()
+
+            return Response({"detail": "새 프로젝트 생성 완료"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # TODO: put, delete 함수도 작성
 
+class ProjectView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-class ProjectsSummaryView(BaseProjectsView):
-    """
-    Project 요약 리스트
+    def get_user_slug(self):
+        return self.request.user.slug
 
-    프로젝트의 제목, 썸네일, 내용
-    """
+    def is_owner(self, obj):
+        user_slug = self.get_user_slug()
+        if user_slug:
+            if obj.author.slug == user_slug:
+                return True
+        return False
 
-    serializer = ProjectSummarySerializer
+    def get(self, request, project_id):
+        """
+        특정 프로젝트 조회.
+        """
+        project = get_object_or_404(Project, pk=project_id)
+        serializer = ProjectSerializer(project)
+
+        return Response(serializer.data)
+
+    def put(self, request, project_id):
+        """
+        특정 프로젝트 수정
+        """
+        # TODO: 썸네일 방식 정해지면 post와 함께 수정 및 추가하기
+
+        # 수정 요청한 project가 로그인 한 사용자 소유인지 확인
+        project = get_object_or_404(Project, pk=project_id)
+        if not self.is_owner(project):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        # TODO: request.data로 기존 project 상세 정보 모두 교체하기
+
+        project.save()
+        return
+
+    def delete(self, request, project_id):
+        """
+        특정 프로젝트 삭제
+        """
+        project = get_object_or_404(Project, pk=project_id)
+        if not self.is_owner(project):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
