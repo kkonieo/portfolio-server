@@ -21,7 +21,7 @@ class LikerSerializer(serializers.ModelSerializer):
         fields = ("slug", "name")
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class RawProjectSerializer(serializers.ModelSerializer):
     """
     프로젝트
     """
@@ -47,7 +47,17 @@ class ProjectSerializer(serializers.ModelSerializer):
     #     return super().create(validated_data)
 
 
-class ProjectSummarySerializer(ProjectSerializer):
+class ProjectSerializer(RawProjectSerializer):
+    content = serializers.SerializerMethodField()
+
+    def get_content(self, obj):
+        strip_string = strip_tags(obj.content).strip()
+        # strip_string = normalize_newlines(strip_string)
+        # strip_string = strip_string.replace("\n", " ")
+        return strip_string
+
+
+class ProjectSummarySerializer(RawProjectSerializer):
     """
     프로젝트의 제목, 썸네일, 내용(미리보기 내용)
     """
@@ -60,5 +70,5 @@ class ProjectSummarySerializer(ProjectSerializer):
         strip_string = strip_string.replace("\n", " ")
         return strip_string[:100]
 
-    class Meta(ProjectSerializer.Meta):
+    class Meta(RawProjectSerializer.Meta):
         fields = ("id", "title", "thumbnail", "content")

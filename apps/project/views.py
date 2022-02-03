@@ -6,7 +6,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Project
-from .serializers import ProjectSerializer, ProjectSummarySerializer
+from .serializers import (
+    ProjectSerializer,
+    ProjectSummarySerializer,
+    RawProjectSerializer,
+)
 
 
 class BaseProjectsView(APIView):
@@ -14,7 +18,7 @@ class BaseProjectsView(APIView):
     Base Project List class
     """
 
-    serializer = ProjectSerializer
+    serializer = RawProjectSerializer
     count = 10
     page = 1
     permission_classes = [
@@ -75,7 +79,7 @@ class ProjectsView(BaseProjectsView):
         user = self.request.user
         if not user:
             return Response(status=status.HTTP_403_FORBIDDEN)
-        serializer = ProjectSerializer(data=request.data)
+        serializer = RawProjectSerializer(data=request.data)
 
         if serializer.is_valid():
             validated_data = serializer.validated_data
@@ -98,7 +102,6 @@ class ProjectView(APIView):
         """
         특정 프로젝트 조회.
         """
-        # TODO: content strip 적용해야함.
         project = Project.objects.filter(pk=project_id)
         serializer = ProjectSerializer(project, many=True)
 
