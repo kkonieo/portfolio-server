@@ -8,15 +8,14 @@ from django.utils.html import strip_tags
 from rest_framework import serializers
 
 from apps.core.models import Image
-from apps.post.pagination import PostListPagination
 
 from .models import Post, User
 
 
-class PostWirteSerializer(serializers.ModelSerializer):
+class PostWriteSerializer(serializers.ModelSerializer):
 
     user_slug = serializers.CharField(source="author.slug", read_only=True)
-    thumbnail_path = serializers.CharField()
+    thumbnail = serializers.ImageField(source="thumbnail.source")
 
     class Meta:
         model = Post
@@ -33,8 +32,8 @@ class PostCreateSerializer(serializers.ModelSerializer):
     #     source="thumbnail.source"
     # )  # source 는 필드를 채우는데 사용할 속성의 이름입니다.
     content = serializers.SerializerMethodField()
-
-    thumbnail_path = serializers.CharField()
+    thumbnail = serializers.ImageField(source="thumbnail.source")
+    # thumbnail_path = serializers.CharField()
     # get_ <을 붙이고 메소드를 정의하면
     # ex:) get_xxxx
     # xxxx 변수의 값은 get_ 함수의 반환값이 된다.
@@ -85,14 +84,9 @@ class PostListSerializer(serializers.ModelSerializer):
     4. 프로젝트 소개 페이지에서 리스트(나열) 형태로 보여줄 내용입니다.
     """
 
+    user_slug = serializers.CharField(source="author.slug", read_only=True)
+    thumbnail = serializers.ImageField(source="thumbnail.source")
+
     class Meta:
         model = Post
-        fields = ("title", "thumbnail", "content")
-
-
-# class PostWriteSerializer(PostSerializer):
-
-#     def
-#     class Meta:
-#         model = Post
-#         fields = "__all__"
+        fields = ("user_slug", "title", "thumbnail", "content")

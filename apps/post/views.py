@@ -10,11 +10,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.post.models import Post
-from apps.post.serializers import PostCardSerializer, PostListSerializer, PostSerializer
+from apps.post.pagination import PostListPagination
+from apps.post.serializers import (PostCardSerializer, PostCreateSerializer,
+                                   PostListSerializer, PostWriteSerializer,)
 
 
 # Post의 목록을 보여주는 역할
-class PostList(APIView):
+class PostList(APIView, PostListPagination):
 
     # Post list를 보여줄 때
     def get(self, request):
@@ -23,8 +25,10 @@ class PostList(APIView):
         """
         posts = Post.objects.all()
         # 여러 개의 객체를 serialization하기 위해 many=True로 설정
+
+        posts = self.paginate_queryset(posts, request, view=self)
         serializer = PostListSerializer(posts, many=True)
-        return Response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     # 새로운 Post 글을 작성할 때
     def post(self, request):
@@ -33,7 +37,7 @@ class PostList(APIView):
         """
         # request.data는 사용자의 입력 데이터
         print("1 - acting")
-        serializer = PostSerializer(data=request.data)
+        serializer = PostCreateSerializer(data=request.data)
         print("2 - acting")
         if serializer.is_valid():
             print("3.1 - acting")
@@ -49,26 +53,26 @@ class PostDetail(APIView):
     # Post 객체 가져오기
     def get_object(self, pk):
         """
-        8. 포스트 페이지
+        post 객체 가져오기
         """
         return get_object_or_404(Post, pk=pk)
 
     # Post의 detail 보기
     def get(self, request, pk, format=None):
         """
-        8. 포스트 페이지
+        post 디테일 뷰
         """
         post = self.get_object(pk)
-        serializer = PostSerializer(post)
+        serializer = PostWriteSerializer(post)
         return Response(serializer.data)
 
     # Post 수정하기
     def put(self, request, pk, format=None):
         """
-        8. 포스트 페이지
+        post 수정 뷰
         """
         post = self.get_object(pk)
-        serializer = PostSerializer(post, data=request.data)
+        serializer = PostWriteSerializer(post, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -77,7 +81,7 @@ class PostDetail(APIView):
     # Post 삭제하기
     def delete(self, request, pk, format=None):
         """
-        8. 포스트 페이지
+        post 삭제 뷰
         """
         post = self.get_object(pk)
         post.delete()
@@ -190,7 +194,7 @@ class PostDetail(APIView):
 #         board =
 
 
-""" PUT 요청 흐름-  - - 
+""" PUT 요청 흐름-  - -
 1. 요청 받은 데이터 유효한지 검증 is_valid()
 2. 요청받은 식별자(id)를 통해 객체가 존재하는지 체크
 3. 요청받은 데이터를 통해 불러온 객체를 수정
