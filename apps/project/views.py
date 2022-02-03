@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator
+from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -98,26 +99,51 @@ class ProjectsView(BaseProjectsView):
 
 
 class ProjectView(APIView):
+    def is_owner(self, request, obj):
+        if request.user:
+            if obj.author.slug == request.user.slug:
+                return True
+        return False
+
+    def get_object(self, project_id):
+        try:
+            return Project.objects.get(pk=project_id)
+        except Project.DoesNotExist:
+            raise Http404
+
     def get(self, request, project_id):
         """
         특정 프로젝트 조회.
         """
-        project = Project.objects.filter(pk=project_id)
-        serializer = ProjectSerializer(project, many=True)
+        project = self.get_object(project_id)
+        serializer = ProjectSerializer(project, partial=True)
 
         return Response(serializer.data)
 
-    def put(self, request):
+    def put(self, request, project_id):
         """
         특정 프로젝트 수정
         """
+        # TODO: 썸네일 방식 정해지면 post와 함께 수정 및 추가하기
+
+        # 수정 요청한 project가 로그인 한 사용자 소유인지 확인
+        project = self.get_object(project_id)
+        if not self.is_owner(request, project):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        # request.data로 기존 project 상세 정보 모두 교체하기
+
         return
 
-    def delete(self, request):
+    def delete(self, request, project_id):
         """
         특정 프로젝트 삭제
         """
-        return
+        project = self.get_object(project_id)
+        if not self.is_owner(request, project):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ProjectsSummaryView(BaseProjectsView):
