@@ -224,3 +224,34 @@ class OtherExperience(DurationModel, TimeStampModel):
         blank=True,
         null=True,
     )
+
+
+class Career(DurationModel, TimeStampModel):
+    """
+    경력
+    """
+
+    user = models.ForeignKey(
+        User,
+        verbose_name="사용자",
+        on_delete=models.CASCADE,
+        related_name="career_user",
+    )
+    company = models.CharField(
+        verbose_name="회사명",
+        max_length=50,
+        blank=True,
+        null=True,
+    )
+    positions = models.ManyToManyField(
+        Position,
+        verbose_name="포지션",
+        related_name="users",
+        blank=True,
+    )
+    tech = models.ManyToManyField(
+        Tech,
+        verbose_name="기술 목록",
+        related_name="users",
+        blank=True,
+    )

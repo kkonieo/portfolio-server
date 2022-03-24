@@ -1,11 +1,11 @@
 from django.conf import settings
 from django.db import models
 
-from apps.core.models import Image, TimeStampModel
+from apps.core.models import DurationModel, Image, TimeStampModel
 from apps.tag.models import Tech
 
 
-class Project(TimeStampModel):
+class Project(TimeStampModel, DurationModel):
     """
     Project 모델
     """
@@ -55,6 +55,21 @@ class Project(TimeStampModel):
         related_name="project_tech_stack",
         null=True,
         blank=True,
+    )
+    role = models.TextField(
+        verbose_name="역할",
+        blank=True,
+        null=True,
+    )
+    takeaway = models.TextField(
+        verbose_name="배운 점",
+        blank=True,
+        null=True,
+    )
+    difficulty = models.TextField(
+        verbose_name="어려웠던 점",
+        blank=True,
+        null=True,
     )
 
     class Meta:
