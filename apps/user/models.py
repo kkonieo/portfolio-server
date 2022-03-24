@@ -246,12 +246,12 @@ class Career(DurationModel, TimeStampModel):
     positions = models.ManyToManyField(
         Position,
         verbose_name="포지션",
-        related_name="users",
+        related_name="careers",
         blank=True,
     )
     tech = models.ManyToManyField(
         Tech,
         verbose_name="기술 목록",
-        related_name="users",
+        related_name="careers",
         blank=True,
     )
