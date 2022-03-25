@@ -2,8 +2,9 @@ import operator
 from functools import reduce
 
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import (
@@ -15,7 +16,7 @@ from rest_framework_simplejwt.views import (
 
 from apps.tag.models import Position, Tech
 from apps.user.models import User
-from apps.user.serializers import UserListSerializer
+from apps.user.serializers import UserListSerializer, UserTechSerializer
 
 
 class DecoratedTokenObtainPairView(TokenObtainPairView):
@@ -79,20 +80,42 @@ class UserListView(APIView):
             q &= Q(name=user_name)
 
         if positions:
-            positions = positions.split("+")
-            positions = Position.objects.filter(name__in=positions)
-            q &= Q(
-                reduce(
-                    operator.and_, (Q(positions__name__contains=x) for x in positions)
-                )
+            positions = positions.split()
+            positions = (
+                Position.objects.filter(name__in=positions)
+                .values("users__pk")
+                .annotate(count=Count("users__pk"))
+                .filter(count=len(positions))
+                .values("users__pk")
             )
+            all_position_users = list(positions.values_list("users__pk", flat=True))
+            print(all_position_users)
+            if all_position_users:
+                q &= Q(pk__in=all_position_users)
+            else:
+                return Response(
+                    {"error": "Any Position found"}, status=status.HTTP_404_NOT_FOUND
+                )
 
         if tech:
-            tech = tech.split("+")
-            tech = Tech.objects.filter(name__in=tech)
-            q &= Q(reduce(operator.and_, (Q(tech__name__contains=x) for x in tech)))
+            tech = tech.split()
+            tech = (
+                Tech.objects.filter(name__in=tech)
+                .values("users__pk")
+                .annotate(count=Count("users__pk"))
+                .filter(count=len(tech))
+                .values("users__pk")
+            )
+            all_tech_users = list(tech.values_list("users__pk", flat=True))
 
-        users = User.objects.filter(q)
+            if all_tech_users:
+                q &= Q(pk__in=all_tech_users)
+            else:
+                return Response(
+                    {"error": "Any Tech found"}, status=status.HTTP_404_NOT_FOUND
+                )
+
+        users = User.objects.filter(q).distinct()
         if page and count:
             paginator = Paginator(users, count)
             users = paginator.get_page(page)

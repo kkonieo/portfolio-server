@@ -21,3 +21,6 @@ class Position(models.Model):
     class Meta:
         verbose_name_plural = "포지션"
         db_table = "position"
+
+    def __str__(self) -> str:
+        return self.name

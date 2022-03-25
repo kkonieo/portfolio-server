@@ -37,7 +37,10 @@ class CustomUserAdmin(UserAdmin):
                     "password",
                     "user_image",
                     "introduction",
+                    "positions",
                     "tech",
+                    "expected_salary",
+                    "hobby",
                 )
             },
         ),
@@ -69,7 +72,10 @@ class CustomUserAdmin(UserAdmin):
     )
 
     # manytomany field 추가 삭제
-    filter_horizontal = ("tech",)
+    filter_horizontal = (
+        "tech",
+        "positions",
+    )
     # 읽기 전용 필드
     readonly_fields = ("created_at", "updated_at")
     # List
