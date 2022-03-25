@@ -5,6 +5,7 @@ from .views import (
     DecoratedTokenObtainPairView,
     DecoratedTokenRefreshView,
     DecoratedTokenVerifyView,
+    UserListView,
 )
 
 urlpatterns = [
@@ -27,5 +28,10 @@ urlpatterns = [
         "token/verify",
         DecoratedTokenVerifyView.as_view(),
         name="user_token_verify",
+    ),
+    path(
+        "",
+        UserListView.as_view(),
+        name="user_list",
     ),
 ]

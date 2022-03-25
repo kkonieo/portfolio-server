@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from apps.user.models import User
+
 
 # simplejwt drf-yasg integration
 # drf-yasg 통합을 위해 선언 되었음
@@ -38,3 +40,22 @@ class TokenBlacklistResponseSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         raise NotImplementedError()
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    user_slug = serializers.SerializerMethodField()
+    user_name = serializers.SerializerMethodField()
+
+    def get_user_slug(self, obj):
+        return obj.slug
+
+    def get_user_name(self, obj):
+        return obj.name
+
+    class Meta:
+        model = User
+        fields = (
+            "user_slug",
+            "user_name",
+            "user_image",
+        )
