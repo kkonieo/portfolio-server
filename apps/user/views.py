@@ -1,6 +1,8 @@
-from unicodedata import name
+import operator
+from functools import reduce
 
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -72,20 +74,25 @@ class UserListView(APIView):
         positions = request.GET.get("position")
         tech = request.GET.get("tech")
 
-        users = User.objects.all()
+        q = Q()
         if user_name:
-            users = users.filter(name=user_name)
+            q &= Q(name=user_name)
 
         if positions:
             positions = positions.split("+")
             positions = Position.objects.filter(name__in=positions)
-            users = users.filter(position__in=User.positions__name)
+            q &= Q(
+                reduce(
+                    operator.and_, (Q(positions__name__contains=x) for x in positions)
+                )
+            )
 
         if tech:
             tech = tech.split("+")
             tech = Tech.objects.filter(name__in=tech)
-            users = users.filter(tech__in=User.tech__name)
+            q &= Q(reduce(operator.and_, (Q(tech__name__contains=x) for x in tech)))
 
+        users = User.objects.filter(q)
         if page and count:
             paginator = Paginator(users, count)
             users = paginator.get_page(page)
