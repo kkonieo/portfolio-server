@@ -45,6 +45,7 @@ class TokenBlacklistResponseSerializer(serializers.Serializer):
 class UserListSerializer(serializers.ModelSerializer):
     user_slug = serializers.SerializerMethodField()
     user_name = serializers.SerializerMethodField()
+    user_image = serializers.ImageField(source="user_image.source")
 
     def get_user_slug(self, obj):
         return obj.slug
