@@ -1,6 +1,3 @@
-import operator
-from functools import reduce
-
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import render
@@ -16,7 +13,7 @@ from rest_framework_simplejwt.views import (
 
 from apps.tag.models import Position, Tech
 from apps.user.models import User
-from apps.user.serializers import UserListSerializer, UserTechSerializer
+from apps.user.serializers import UserListSerializer
 
 
 class DecoratedTokenObtainPairView(TokenObtainPairView):

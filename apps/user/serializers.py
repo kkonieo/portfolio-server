@@ -66,9 +66,3 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
-
-
-class UserTechSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("tech",)
