@@ -119,3 +119,14 @@ class UserListView(APIView):
 
         serializer = UserListSerializer(users, many=True)
         return Response(serializer.data)
+
+
+class DeveloperListView(APIView):
+    """
+    개발자 리스트
+    """
+
+    def get(self, request):
+        developers = User.objects.filter(is_staff=True)
+        serializer = UserListSerializer(developers, many=True)
+        return Response(serializer.data)
