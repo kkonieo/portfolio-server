@@ -2,6 +2,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import render
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import (
@@ -130,3 +131,39 @@ class DeveloperListView(APIView):
         developers = User.objects.filter(is_staff=True)
         serializer = UserListSerializer(developers, many=True)
         return Response(serializer.data)
+
+
+class UserView(APIView):
+    """
+    회원 정보 등록을 위한 REST API
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user_slug = request.data.get("user_slug")
+        if not user_slug:
+            return Response(
+                {"error": "user_slug must be given!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = User.objects.filter(slug=user_slug).first()
+
+        user_name = request.data.get("user_name")
+        if not user_name:
+            return Response(
+                {"error": "user_name must be given!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user_image = request.FILES.get("user_image")
+        if not user_image:
+            return Response(
+                {"error": "user_image must be given!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.name = user_name
+
+        # 저장돼있는 유저 정보 가져와서 다른 부분만 업데이트 -> put

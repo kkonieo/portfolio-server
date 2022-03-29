@@ -40,6 +40,9 @@ class RawProjectSerializer(serializers.ModelSerializer):
             "thumbnail",
             "tech_stack",
             "likers",
+            "role",
+            "takeaway",
+            "difficulty",
         )
 
     # def create(self, validated_data):

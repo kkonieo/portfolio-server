@@ -171,7 +171,7 @@ class Education(DurationModel, TimeStampModel):
     )
 
 
-class Functions(TimeStampModel):
+class DevelopedFunction(TimeStampModel):
     """
     개발 기능
     """
