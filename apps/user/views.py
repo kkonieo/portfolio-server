@@ -150,20 +150,22 @@ class UserView(APIView):
 
         user = User.objects.filter(slug=user_slug).first()
 
-        user_name = request.data.get("user_name")
-        if not user_name:
-            return Response(
-                {"error": "user_name must be given!"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # user_name = request.data.get("user_name")
+        # if not user_name:
+        #     return Response(
+        #         {"error": "user_name must be given!"},
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
+        # user.name = user_name
+
+        # user_introduction = request.data.get("user_introduction")
+        # if not user_introduction:
+        #     return Response(
+        #         {"error": "user_introduction must be given!"},
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
+        # user.introduction = user_introduction
 
         user_image = request.FILES.get("user_image")
-        if not user_image:
-            return Response(
-                {"error": "user_image must be given!"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        user.name = user_name
 
         # 저장돼있는 유저 정보 가져와서 다른 부분만 업데이트 -> put

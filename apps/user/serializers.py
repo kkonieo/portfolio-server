@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from apps.project.serializers import ProjectSerializer
+from apps.tag.serializers import PositionSerializer, TechSerializer
 from apps.user.models import (
     Career,
     DevelopedFunction,
@@ -114,11 +115,11 @@ class UserSerializer(serializers.ModelSerializer):
     user_slug = serializers.SerializerMethodField()
     user_name = serializers.SerializerMethodField()
     user_image = serializers.ImageField(source="user_image.source", allow_null=True)
-    user_positions = serializers.SerializerMethodField()
+    user_positions = PositionSerializer(many=True, allow_null=True)
     user_links = LinkSerializer(many=True, allow_null=True)
     user_introduction = serializers.SerializerMethodField()
     projects = ProjectSerializer(many=True, allow_null=True)
-    skills = serializers.SerializerMethodField()
+    skills = TechSerializer(many=True, allow_null=True)
     careers = CareerSerializer(many=True, allow_null=True)
     educations = EducationSerializer(many=True, allow_null=True)
     other_experiences = OtherExperienceSerializer(many=True, allow_null=True)
