@@ -12,9 +12,10 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+from apps.core.models import Image
 from apps.tag.models import Position, Tech
 from apps.user.models import User
-from apps.user.serializers import UserListSerializer
+from apps.user.serializers import UserListSerializer, UserSerializer
 
 
 class DecoratedTokenObtainPairView(TokenObtainPairView):
@@ -135,20 +136,29 @@ class DeveloperListView(APIView):
 
 class UserView(APIView):
     """
-    회원 정보 등록을 위한 REST API
+    회원 정보 REST API
     """
 
-    permission_classes = [IsAuthenticated]
+    def get(self, request, slug):
+        user = User.objects.filter(slug=slug).first()
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
 
-    def post(self, request):
-        user_slug = request.data.get("user_slug")
-        if not user_slug:
-            return Response(
-                {"error": "user_slug must be given!"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+    # permission_classes = [IsAuthenticated]
 
-        user = User.objects.filter(slug=user_slug).first()
+    def post(self, request, slug):
+        # user_slug = request.data.get("user_slug")
+        # if not user_slug:
+        #     return Response(
+        #         {"message": "user_slug must be given!"},
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
+        # if user_slug != slug:
+        #     return Response(
+        #         {"message": "login user can modify own info only."}
+        #     )
+
+        user = User.objects.filter(slug=slug).first()
 
         # user_name = request.data.get("user_name")
         # if not user_name:
@@ -166,6 +176,17 @@ class UserView(APIView):
         #     )
         # user.introduction = user_introduction
 
+        # user image
         user_image = request.FILES.get("user_image")
+        user_image = Image(source=user_image)
+        # user_image.save()
+
+        # user links
+        # user_links = request.data.get("user_links")
+        # user_links = Link
+
+        # TODO: 포지션, 테크는 어떻게 저장하지? Serializer 어떻게 할지 고민.
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         # 저장돼있는 유저 정보 가져와서 다른 부분만 업데이트 -> put
