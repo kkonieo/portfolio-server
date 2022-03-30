@@ -7,6 +7,8 @@ environment variables:
 """
 
 import os
+import json
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -18,6 +20,11 @@ env = os.environ
 
 # base directory
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+SECRET_BASE_FILE = os.path.join(BASE_DIR, 'secrets.json')
+
+secrets = json.loads(open(SECRET_BASE_FILE).read())
+for key, value in secrets.items():
+    setattr(sys.modules[__name__], key, value)
 
 # static directory
 STATIC_URL = "/staticfiles/"
@@ -31,6 +38,15 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 파일업로드 사이즈의 최대값�
 
 # 후행 슬래시 비활성화
 APPEND_SLASH = False
+
+# 디폴트 SITE의 id
+# 등록하지 않으면, 각 요청 시에 host명의 Site 인스턴스를 찾습니다 .
+SITE_ID = 1
+
+# django-allauth setting
+LOGIN_REDIRECT_URL = 'home' # 로그인 후 리디렉션할 페이지
+ACCOUNT_LOGOUT_REDIRECT_URL = "home"  # 로그아웃 후 리디렉션 할 페이지
+ACCOUNT_LOGOUT_ON_GET = True # 로그아웃 버튼 클릭 시 자동 로그아웃
 
 # ------------------------------------------------
 # 보안
@@ -69,13 +85,20 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django.contrib.sites',
 ]
 
 # 써드파티 라이브러리
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
-    "rest_framework_simplejwt.token_blacklist",  # token blacklist
+    "rest_framework_simplejwt.token_blacklist",  # token blacklist    
+    
+    # django-allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',  
+    'allauth.socialaccount.providers.kakao',
 ]
 
 # 프로젝트에서 생성한 앱
@@ -86,6 +109,7 @@ LOCAL_APPS = [
     "apps.post",
     "apps.comment",
     "apps.tag",
+    "apps.accounts"
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -137,7 +161,7 @@ DATABASES = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = 'accounts.User'
 # ------------------------------------------------
 # I18n
 # ------------------------------------------------
@@ -154,10 +178,15 @@ USE_TZ = True
 # Thrid Party
 # ------------------------------------------------
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    ),
 }
+
 
 # DRF simplejwt 설정
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html
@@ -181,3 +210,11 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(hours=1),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
+
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
