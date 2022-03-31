@@ -139,47 +139,56 @@ class UserView(APIView):
     회원 정보 REST API
     """
 
+    # permission_classes = [IsAuthenticated]
+
     def get(self, request, slug):
+        """
+        사용자 상세 정보 반환
+        """
         user = User.objects.filter(slug=slug).first()
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-    # permission_classes = [IsAuthenticated]
+    def put(self, request, slug):
+        """
+        사용자 정보 업데이트.
+        """
 
-    def post(self, request, slug):
-        # user_slug = request.data.get("user_slug")
-        # if not user_slug:
-        #     return Response(
-        #         {"message": "user_slug must be given!"},
-        #         status=status.HTTP_400_BAD_REQUEST,
-        #     )
-        # if user_slug != slug:
-        #     return Response(
-        #         {"message": "login user can modify own info only."}
-        #     )
+        user = User.objects.get(slug=slug)
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        user = User.objects.filter(slug=slug).first()
+        user_name = request.data.get("user_name")
+        if user_name:
+            user.name = user_name
 
-        # user_name = request.data.get("user_name")
-        # if not user_name:
-        #     return Response(
-        #         {"error": "user_name must be given!"},
-        #         status=status.HTTP_400_BAD_REQUEST,
-        #     )
-        # user.name = user_name
-
-        # user_introduction = request.data.get("user_introduction")
-        # if not user_introduction:
-        #     return Response(
-        #         {"error": "user_introduction must be given!"},
-        #         status=status.HTTP_400_BAD_REQUEST,
-        #     )
-        # user.introduction = user_introduction
+        user_introduction = request.data.get("user_introduction")
+        if user_introduction:
+            user.introduction = user_introduction
 
         # user image
         user_image = request.FILES.get("user_image")
-        user_image = Image(source=user_image)
-        # user_image.save()
+        if user_image:
+            user_image = Image(source=user_image)
+            user_image.save()
+            user.user_image = user_image.source
+
+        expected_salary = request.data.get("expected_salary")
+        if expected_salary:
+            user.expected_salary = expected_salary
+
+        hobby = request.data.get("hobby")
+        if hobby:
+            user.hobby = hobby
+
+        # user_positions = request.data.get("user_positions")
+        # if user_positions:
+        #     positions = Position.objects.filter()
+        #     user.user_positions = user_positions
 
         # user links
         # user_links = request.data.get("user_links")
@@ -187,6 +196,4 @@ class UserView(APIView):
 
         # TODO: 포지션, 테크는 어떻게 저장하지? Serializer 어떻게 할지 고민.
         serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        # 저장돼있는 유저 정보 가져와서 다른 부분만 업데이트 -> put
+        return Response(serializer.data)

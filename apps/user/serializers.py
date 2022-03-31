@@ -1,8 +1,13 @@
 from rest_framework import serializers
+from rest_framework.serializers import (
+    ModelSerializer,
+    Serializer,
+    SerializerMethodField,
+)
 
 from apps.project.models import Project
 from apps.project.serializers import ProjectSerializer
-from apps.tag.models import Position
+from apps.tag.models import Position, Tech
 from apps.tag.serializers import PositionSerializer, TechSerializer
 from apps.user.models import (
     Career,
@@ -16,7 +21,7 @@ from apps.user.models import (
 
 # simplejwt drf-yasg integration
 # drf-yasg 통합을 위해 선언 되었음
-class TokenObtainPairResponseSerializer(serializers.Serializer):
+class TokenObtainPairResponseSerializer(Serializer):
     access = serializers.CharField()
     refresh = serializers.CharField()
 
@@ -27,7 +32,7 @@ class TokenObtainPairResponseSerializer(serializers.Serializer):
         raise NotImplementedError()
 
 
-class TokenRefreshResponseSerializer(serializers.Serializer):
+class TokenRefreshResponseSerializer(Serializer):
     access = serializers.CharField()
 
     def create(self, validated_data):
@@ -37,7 +42,7 @@ class TokenRefreshResponseSerializer(serializers.Serializer):
         raise NotImplementedError()
 
 
-class TokenVerifyResponseSerializer(serializers.Serializer):
+class TokenVerifyResponseSerializer(Serializer):
     def create(self, validated_data):
         raise NotImplementedError()
 
@@ -45,7 +50,7 @@ class TokenVerifyResponseSerializer(serializers.Serializer):
         raise NotImplementedError()
 
 
-class TokenBlacklistResponseSerializer(serializers.Serializer):
+class TokenBlacklistResponseSerializer(Serializer):
     def create(self, validated_data):
         raise NotImplementedError()
 
@@ -53,9 +58,9 @@ class TokenBlacklistResponseSerializer(serializers.Serializer):
         raise NotImplementedError()
 
 
-class UserListSerializer(serializers.ModelSerializer):
-    user_slug = serializers.SerializerMethodField()
-    user_name = serializers.SerializerMethodField()
+class UserListSerializer(ModelSerializer):
+    user_slug = SerializerMethodField()
+    user_name = SerializerMethodField()
     user_image = serializers.ImageField(source="user_image.source", allow_null=True)
 
     def get_user_slug(self, obj):
@@ -73,7 +78,7 @@ class UserListSerializer(serializers.ModelSerializer):
         )
 
 
-class LinkSerializer(serializers.ModelSerializer):
+class LinkSerializer(ModelSerializer):
     # user_slug = serializers.CharField(source="user.slug", read_only=True)
 
     class Meta:
@@ -81,7 +86,7 @@ class LinkSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class DevelopedFunctionSerializer(serializers.ModelSerializer):
+class DevelopedFunctionSerializer(ModelSerializer):
     # user_slug = serializers.CharField(source="user.slug", read_only=True)
 
     class Meta:
@@ -89,7 +94,7 @@ class DevelopedFunctionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class EducationSerializer(serializers.ModelSerializer):
+class EducationSerializer(ModelSerializer):
     # user_slug = serializers.CharField(source="user.slug", read_only=True)
 
     class Meta:
@@ -97,7 +102,7 @@ class EducationSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class OtherExperienceSerializer(serializers.ModelSerializer):
+class OtherExperienceSerializer(ModelSerializer):
     # user_slug = serializers.CharField(source="user.slug", read_only=True)
 
     class Meta:
@@ -105,7 +110,7 @@ class OtherExperienceSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class CareerSerializer(serializers.ModelSerializer):
+class CareerSerializer(ModelSerializer):
     # user_slug = serializers.CharField(source="user.slug", read_only=True)
 
     class Meta:
@@ -118,38 +123,20 @@ class ListingField(serializers.RelatedField):
         return value.name
 
 
-class UserSerializer(serializers.ModelSerializer):
-    user_slug = serializers.SerializerMethodField()
-    user_name = serializers.SerializerMethodField()
+class UserSerializer(ModelSerializer):
+    user_slug = serializers.CharField(source="slug", read_only=True)
+    user_name = serializers.CharField(source="name", allow_null=True)
     user_image = serializers.ImageField(source="user_image.source", allow_null=True)
-    user_positions = ListingField(
-        source="positions",
-        many=True,
-        allow_null=True,
-        read_only=True,
-    )
-    user_links = serializers.SerializerMethodField()
-    user_introduction = serializers.SerializerMethodField()
-    projects = serializers.SerializerMethodField()
-    skills = ListingField(
-        source="tech",
-        many=True,
-        allow_null=True,
-        read_only=True,
-    )
-    careers = serializers.SerializerMethodField()
-    educations = serializers.SerializerMethodField()
-    other_experiences = serializers.SerializerMethodField()
-    developed_functions = serializers.SerializerMethodField()
+    user_introduction = serializers.CharField(source="introduction", allow_null=True)
 
-    def get_user_slug(self, obj):
-        return obj.slug
-
-    def get_user_name(self, obj):
-        return obj.name
-
-    def get_user_introduction(self, obj):
-        return obj.introduction
+    positions = PositionSerializer(many=True, allow_null=True)
+    tech = TechSerializer(many=True, allow_null=True)
+    projects = SerializerMethodField(allow_null=True)
+    user_links = SerializerMethodField(allow_null=True)
+    careers = SerializerMethodField(allow_null=True)
+    educations = SerializerMethodField(allow_null=True)
+    other_experiences = SerializerMethodField(allow_null=True)
+    developed_functions = SerializerMethodField(allow_null=True)
 
     def get_user_links(self, obj):
         links = Link.objects.filter(user=obj)
@@ -211,21 +198,27 @@ class UserSerializer(serializers.ModelSerializer):
         )
         return serializer.data
 
+    # def update(self, instance, validated_data):
+    #     instance.name = validated_data.get('user_name', instance.name)
+    #     instance.content = validated_data.get('content', instance.content)
+    #     instance.save()
+    #     return instance
+
     class Meta:
         model = User
         fields = (
             "user_slug",
             "user_name",
             "user_image",
-            "user_positions",
-            "user_links",
             "user_introduction",
+            "hobby",
+            "expected_salary",
+            "positions",
+            "tech",
             "projects",
-            "skills",
+            "user_links",
             "careers",
             "educations",
             "other_experiences",
             "developed_functions",
-            "hobby",
-            "expected_salary",
         )
