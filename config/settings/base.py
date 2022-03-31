@@ -104,6 +104,7 @@ THIRD_PARTY_APPS = [
 # 프로젝트에서 생성한 앱
 LOCAL_APPS = [
     "apps.user",
+    "apps.users",
     "apps.core",
     "apps.project",
     "apps.post",
