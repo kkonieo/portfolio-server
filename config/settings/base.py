@@ -9,15 +9,45 @@ environment variables:
 import os
 from datetime import timedelta
 from pathlib import Path
-
+import json
 env = os.environ
 
 # ------------------------------------------------
 # 경로 설정
 # ------------------------------------------------
 
+# kakao-oauth
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# 디폴트 SITE의 id / 등록을 하지 않으면, 각 요청 시에 host명의 Site 인스턴스를 찾는다 .
+SITE_ID = 1
+
+...
+# django-allauth setting
+LOGIN_REDIRECT_URL ='127.0.0.1:8000' # 로그인 후 리다이렉트 할 페이지
+ACCOUNT_LOGOUT_REDIRECT_URL = '127.0.0.1:8000'  # 로그아웃 후 리다이렉트
+
 # base directory
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# 보류
+# SECURITY WARNING: keep the secret key used in production secret!
+# secret_file = os.path.join(BASE_DIR, 'secrets.json')
+
+# with open(secret_file) as f:
+#     secrets = json.loads(f.read())
+# def get_secret(setting, secrets=secrets):
+#     try:
+#         return secrets[setting]
+#     except KeyError:
+#         error_msg = "Set the {} environment variable".format(setting)
+#         raise ImproperlyConfigured(error_msg)
+
+SECRET_KEY = "SECRET_KEY"
+#SECRET_KEY = get_secret("SECRET_KEY")
 
 # static directory
 STATIC_URL = "/staticfiles/"
@@ -76,6 +106,11 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",  # token blacklist
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.kakao',
 ]
 
 # 프로젝트에서 생성한 앱
@@ -86,6 +121,7 @@ LOCAL_APPS = [
     "apps.post",
     "apps.comment",
     "apps.tag",
+    "apps.accounts"
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
