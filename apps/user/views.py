@@ -2,6 +2,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import render
 from rest_framework import status
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -139,6 +140,8 @@ class UserView(APIView):
     회원 정보 REST API
     """
 
+    parser_classes = (FormParser, MultiPartParser)
+
     # permission_classes = [IsAuthenticated]
 
     def get(self, request, slug):
@@ -153,14 +156,9 @@ class UserView(APIView):
         """
         사용자 정보 업데이트.
         """
+        data = request.data
 
         user = User.objects.get(slug=slug)
-        serializer = UserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         user_name = request.data.get("user_name")
         if user_name:
@@ -170,13 +168,6 @@ class UserView(APIView):
         if user_introduction:
             user.introduction = user_introduction
 
-        # user image
-        user_image = request.FILES.get("user_image")
-        if user_image:
-            user_image = Image(source=user_image)
-            user_image.save()
-            user.user_image = user_image.source
-
         expected_salary = request.data.get("expected_salary")
         if expected_salary:
             user.expected_salary = expected_salary
@@ -185,15 +176,27 @@ class UserView(APIView):
         if hobby:
             user.hobby = hobby
 
+        user_image = request.FILES.get("user_image")
+        if user_image:
+            user_image = Image(source=user_image)
+            user_image.save()
+            user.user_image = user_image
+
+            data["user_image"] = user_image.source
+
         # user_positions = request.data.get("user_positions")
         # if user_positions:
         #     positions = Position.objects.filter()
+        #     user.user_positions.add
         #     user.user_positions = user_positions
 
-        # user links
+        # # user links
         # user_links = request.data.get("user_links")
         # user_links = Link
 
-        # TODO: 포지션, 테크는 어떻게 저장하지? Serializer 어떻게 할지 고민.
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+        serializer = UserSerializer(user, data=request.data)
+        if serializer.is_valid():
+            # serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

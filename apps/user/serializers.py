@@ -126,17 +126,24 @@ class ListingField(serializers.RelatedField):
 class UserSerializer(ModelSerializer):
     user_slug = serializers.CharField(source="slug", read_only=True)
     user_name = serializers.CharField(source="name", allow_null=True)
-    user_image = serializers.ImageField(source="user_image.source", allow_null=True)
+    user_image = serializers.ImageField(
+        source="user_image.source",
+        allow_null=True,
+        allow_empty_file=True,
+        read_only=True,
+    )
     user_introduction = serializers.CharField(source="introduction", allow_null=True)
 
-    positions = PositionSerializer(many=True, allow_null=True)
-    tech = TechSerializer(many=True, allow_null=True)
-    projects = SerializerMethodField(allow_null=True)
-    user_links = SerializerMethodField(allow_null=True)
-    careers = SerializerMethodField(allow_null=True)
-    educations = SerializerMethodField(allow_null=True)
-    other_experiences = SerializerMethodField(allow_null=True)
-    developed_functions = SerializerMethodField(allow_null=True)
+    user_positions = PositionSerializer(
+        many=True, allow_null=True, required=False, read_only=True
+    )
+    skills = TechSerializer(many=True, allow_null=True, required=False, read_only=True)
+    projects = SerializerMethodField(allow_null=True, read_only=True)
+    user_links = SerializerMethodField(allow_null=True, read_only=True)
+    careers = SerializerMethodField(allow_null=True, read_only=True)
+    educations = SerializerMethodField(allow_null=True, read_only=True)
+    other_experiences = SerializerMethodField(allow_null=True, read_only=True)
+    developed_functions = SerializerMethodField(allow_null=True, read_only=True)
 
     def get_user_links(self, obj):
         links = Link.objects.filter(user=obj)
@@ -213,8 +220,8 @@ class UserSerializer(ModelSerializer):
             "user_introduction",
             "hobby",
             "expected_salary",
-            "positions",
-            "tech",
+            "user_positions",
+            "skills",
             "projects",
             "user_links",
             "careers",

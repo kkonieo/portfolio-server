@@ -94,12 +94,14 @@ class User(AbstractBaseUser, TimeStampModel, PermissionsMixin):
         verbose_name="포지션",
         related_name="users",
         blank=True,
+        null=True,
     )
     tech = models.ManyToManyField(
         Tech,
         verbose_name="기술 목록",
         related_name="users",
         blank=True,
+        null=True,
     )
 
     objects = CustomUserManager()
