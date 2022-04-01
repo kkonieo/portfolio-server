@@ -6,7 +6,7 @@ from django.utils.text import normalize_newlines
 from rest_framework import serializers
 
 from apps.core.models import Image
-from apps.user.models import User
+from apps.accounts.models import User
 
 from .models import Project
 

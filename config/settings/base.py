@@ -27,8 +27,8 @@ SITE_ID = 1
 
 ...
 # django-allauth setting
-LOGIN_REDIRECT_URL ='127.0.0.1:8000' # 로그인 후 리다이렉트 할 페이지
-ACCOUNT_LOGOUT_REDIRECT_URL = '127.0.0.1:8000'  # 로그아웃 후 리다이렉트
+LOGIN_REDIRECT_URL ='www.naver.com'            # 로그인 후 리다이렉트 할 페이지
+ACCOUNT_LOGOUT_REDIRECT_URL = 'www.naver.com'  # 로그아웃 후 리다이렉트
 
 # base directory
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -115,7 +115,6 @@ THIRD_PARTY_APPS = [
 
 # 프로젝트에서 생성한 앱
 LOCAL_APPS = [
-    "apps.user",
     "apps.core",
     "apps.project",
     "apps.post",
@@ -173,7 +172,7 @@ DATABASES = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = "accounts.User"
 # ------------------------------------------------
 # I18n
 # ------------------------------------------------

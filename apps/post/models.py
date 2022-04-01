@@ -1,7 +1,7 @@
 from django.db import models
 
 from apps.core.models import Image, TimeStampModel
-from apps.user.models import User
+from apps.accounts.models import User
 
 # Create your models here.
 
