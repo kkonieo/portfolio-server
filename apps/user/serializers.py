@@ -83,7 +83,7 @@ class LinkSerializer(ModelSerializer):
 
     class Meta:
         model = Link
-        fields = "__all__"
+        fields = ("id", "source")
 
 
 class DevelopedFunctionSerializer(ModelSerializer):

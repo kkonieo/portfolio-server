@@ -20,8 +20,8 @@ from apps.project.models import Project
 from apps.project.serializers import ProjectSerializer
 from apps.tag.models import Position, Tech
 from apps.tag.serializers import PositionSerializer, TechSerializer
-from apps.user.models import User
-from apps.user.serializers import UserListSerializer, UserSerializer
+from apps.user.models import Link, User
+from apps.user.serializers import LinkSerializer, UserListSerializer, UserSerializer
 
 
 class DecoratedTokenObtainPairView(TokenObtainPairView):
@@ -258,25 +258,17 @@ class UserView(APIView):
         projects = json.loads(projects)
         project_serializer = ProjectSerializer(data=projects, many=True)
         if project_serializer.is_valid():
-            Project.objects.filter(author=user).delete()
-            projects = project_serializer.save(author_id=user)
+            old_projects = Project.objects.filter(author=user)
+            old_projects.delete()
+            projects = project_serializer.save(author=user)
             for project in projects:
-                p = Project()
-                p.title = project.title
-                p.content = project.content
-                p.author = project.author
-                p.thumbnail = project.thumbnail
-                p.role = project.role
-                p.takeaway = project.takeaway
-                p.difficulty = project.difficulty
                 project_likers = project.liker.all()
-                p.save()
                 for project_liker in project_likers:
-                    p.likers.add(project_liker)
+                    project.likers.add(project_liker)
                 project_tech_stacks = project.tech_stack.all()
                 for project_tech_stack in project_tech_stacks:
-                    p.tech_stack.add(project_tech_stack)
-                p.save()
+                    project.tech_stack.add(project_tech_stack)
+                project.save()
 
         else:
             return Response(
@@ -284,8 +276,19 @@ class UserView(APIView):
             )
 
         # # user links
-        # user_links = request.data.get("user_links")
-        # user_links = Link
+        user_links = data.get("user_links")
+        if not user_links:
+            return Response(
+                {"message": "must contain user_links!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        user_links = json.loads(user_links)
+        Link.objects.filter(user=user).delete()
+        for user_link in user_links:
+            link = Link(source=user_link, user=user)
+            link.save()
+
+        # TODO: careers, educations, other_experiences, developed_functions 구현 - 위 project 구현 참고
 
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():
