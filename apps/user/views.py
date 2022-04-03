@@ -20,11 +20,12 @@ from apps.project.models import Project
 from apps.project.serializers import ProjectSerializer
 from apps.tag.models import Position, Tech
 from apps.tag.serializers import PositionSerializer, TechSerializer
-from apps.user.models import Career, Education, Link, User
+from apps.user.models import Career, Education, Link, OtherExperience, User
 from apps.user.serializers import (
     CareerSerializer,
     EducationSerializer,
     LinkSerializer,
+    OtherExperienceSerializer,
     UserListSerializer,
     UserSerializer,
 )
@@ -337,6 +338,31 @@ class UserView(APIView):
         else:
             return Response(
                 education_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        other_experiences = data.get("other_experiences")
+        if not other_experiences:
+            return Response(
+                {"message": "must contain other_experiences!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        other_experiences = json.loads(other_experiences)
+        other_experience_serializer = OtherExperienceSerializer(
+            data=other_experiences, many=True
+        )
+        if other_experience_serializer.is_valid():
+            old_other_experience = OtherExperience.objects.filter(user=user)
+            old_other_experience.delete()
+            other_experiences = other_experience_serializer.save(user=user)
+            for other_experience in other_experiences:
+                other_experience_tech = other_experience.tech.all()
+                for other_experience_t in other_experience_tech:
+                    other_experience.tech.add(other_experience_t)
+                other_experience.save()
+
+        else:
+            return Response(
+                other_experience_serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
 
         serializer = UserSerializer(user, data=request.data)
