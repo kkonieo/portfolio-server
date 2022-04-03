@@ -188,15 +188,16 @@ class UserView(APIView):
             # data["user_image"] = user_image.source
 
         user_positions = data.get("user_positions")
-        if user_positions:
+        if not user_positions:
+            return Response(
+                {"message": "must contain user_positions!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        else:
             user_positions = json.loads(user_positions)
             positions = []
             for position in user_positions:
-                # position_serializer = PositionSerializer(position)
-                # if position_serializer.is_valid():
-                #     print(position_serializer.data)
                 position_name = position.get("name")
-                # print(position_name)
                 if not position_name:
                     return Response(
                         {"message": "user_positions must contain position name!"},
@@ -211,43 +212,10 @@ class UserView(APIView):
                         )
                     else:
                         positions.append(p)
-            user_positions = Position.objects.filter(users=user)
-            print(user.positions.all())
-            # for user_position in user_positions:
-            #     # user_position.users.remove(user)
-            #     # user_position.save()
-            #     user.positions.remove(user_position)
-            #     print("삭제됨")
-
-            # if user_positions:
-            #     user_positions.all().delete()
-            #     user_positions = Position.objects.filter(users=user)
-            #     print(user_positions)
-            # else:
-            #     print("user_positions 없음")
-            print(positions)
             user.positions.clear()
-            user.save()
             for position in positions:
-                # p = Position(users=user, name=position.name)
-                # position.users.add(user)
-                # position.save()
                 user.positions.add(position)
-
-            # user.positions.save()
-            # user.positions.set(positions)
             user.save()
-            # user = User.objects.get(slug=slug)
-            print(user)
-            print(user.positions.all())
-
-            # else:
-            #     print("NOT VALID")
-            # position_serializer = PositionSerializer(data=user_positions, many=True)
-            # if position_serializer.is_valid():
-            #     print(position_serializer.data)
-            # user.user_positions.add
-            # user.user_positions = user_positions
 
         # # user links
         # user_links = request.data.get("user_links")
