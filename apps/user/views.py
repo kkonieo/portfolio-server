@@ -16,6 +16,8 @@ from rest_framework_simplejwt.views import (
 )
 
 from apps.core.models import Image
+from apps.project.models import Project
+from apps.project.serializers import ProjectSerializer
 from apps.tag.models import Position, Tech
 from apps.tag.serializers import PositionSerializer, TechSerializer
 from apps.user.models import User
@@ -196,26 +198,90 @@ class UserView(APIView):
         else:
             user_positions = json.loads(user_positions)
             positions = []
-            for position in user_positions:
-                position_name = position.get("name")
+            for t in user_positions:
+                position_name = t.get("name")
                 if not position_name:
                     return Response(
-                        {"message": "user_positions must contain position name!"},
+                        {"message": "user_positions must contain name!"},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
                 else:
-                    p = Position.objects.filter(name=position_name).first()
-                    if not p:
+                    t = Position.objects.filter(name=position_name).first()
+                    if not t:
                         return Response(
                             {"message": "invalid position name"},
                             status=status.HTTP_400_BAD_REQUEST,
                         )
                     else:
-                        positions.append(p)
+                        positions.append(t)
             user.positions.clear()
-            for position in positions:
-                user.positions.add(position)
+            for t in positions:
+                user.positions.add(t)
             user.save()
+
+        skills = data.get("skills")
+        if not skills:
+            return Response(
+                {"message": "must contain skills!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        else:
+            skills = json.loads(skills)
+            tech = []
+            for skill in skills:
+                skill_name = skill.get("name")
+                if not skill_name:
+                    return Response(
+                        {"message": "skills must contain name!"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                else:
+                    t = Tech.objects.filter(name=skill_name).first()
+                    if not t:
+                        return Response(
+                            {"message": "invalid position name"},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                    else:
+                        tech.append(t)
+            user.tech.clear()
+            for t in tech:
+                user.tech.add(t)
+            user.save()
+
+        projects = data.get("projects")
+        if not projects:
+            return Response(
+                {"message": "must contain projects!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        projects = json.loads(projects)
+        project_serializer = ProjectSerializer(data=projects, many=True)
+        if project_serializer.is_valid():
+            Project.objects.filter(author=user).delete()
+            projects = project_serializer.save(author_id=user)
+            for project in projects:
+                p = Project()
+                p.title = project.title
+                p.content = project.content
+                p.author = project.author
+                p.thumbnail = project.thumbnail
+                p.role = project.role
+                p.takeaway = project.takeaway
+                p.difficulty = project.difficulty
+                project_likers = project.liker.all()
+                p.save()
+                for project_liker in project_likers:
+                    p.likers.add(project_liker)
+                project_tech_stacks = project.tech_stack.all()
+                for project_tech_stack in project_tech_stacks:
+                    p.tech_stack.add(project_tech_stack)
+                p.save()
+
+        else:
+            return Response(
+                project_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
         # # user links
         # user_links = request.data.get("user_links")

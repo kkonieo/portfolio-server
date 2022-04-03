@@ -26,8 +26,8 @@ class RawProjectSerializer(serializers.ModelSerializer):
     프로젝트
     """
 
-    thumbnail = serializers.ImageField(source="thumbnail.source")
-    likers = LikerSerializer(source="liker", many=True)
+    thumbnail = serializers.ImageField(source="thumbnail.source", required=False)
+    likers = LikerSerializer(source="liker", many=True, read_only=True)
     user_slug = serializers.CharField(source="author.slug", read_only=True)
 
     class Meta:
