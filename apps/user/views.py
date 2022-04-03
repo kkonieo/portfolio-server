@@ -20,9 +20,10 @@ from apps.project.models import Project
 from apps.project.serializers import ProjectSerializer
 from apps.tag.models import Position, Tech
 from apps.tag.serializers import PositionSerializer, TechSerializer
-from apps.user.models import Career, Link, User
+from apps.user.models import Career, Education, Link, User
 from apps.user.serializers import (
     CareerSerializer,
+    EducationSerializer,
     LinkSerializer,
     UserListSerializer,
     UserSerializer,
@@ -293,7 +294,7 @@ class UserView(APIView):
             link = Link(source=user_link, user=user)
             link.save()
 
-        # TODO: educations, other_experiences, developed_functions 구현 - 위 project 구현 참고
+        # TODO: other_experiences, developed_functions 구현 - 위 project 구현 참고
         careers = data.get("careers")
         if not careers:
             return Response(
@@ -318,6 +319,24 @@ class UserView(APIView):
         else:
             return Response(
                 career_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        educations = data.get("educations")
+        if not educations:
+            return Response(
+                {"message": "must contain educations!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        educations = json.loads(educations)
+        education_serializer = EducationSerializer(data=educations, many=True)
+        if education_serializer.is_valid():
+            old_educations = Education.objects.filter(user=user)
+            old_educations.delete()
+            educations = education_serializer.save(user=user)
+
+        else:
+            return Response(
+                education_serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
 
         serializer = UserSerializer(user, data=request.data)

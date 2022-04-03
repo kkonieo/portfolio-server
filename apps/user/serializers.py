@@ -91,7 +91,7 @@ class DevelopedFunctionSerializer(ModelSerializer):
 
     class Meta:
         model = DevelopedFunction
-        fields = "__all__"
+        fields = ("name", "description")
 
 
 class EducationSerializer(ModelSerializer):
@@ -99,7 +99,7 @@ class EducationSerializer(ModelSerializer):
 
     class Meta:
         model = Education
-        fields = "__all__"
+        fields = ("school", "status", "department", "gpa")
 
 
 class OtherExperienceSerializer(ModelSerializer):
@@ -107,7 +107,7 @@ class OtherExperienceSerializer(ModelSerializer):
 
     class Meta:
         model = OtherExperience
-        fields = "__all__"
+        fields = ("title", "achievement", "tech")
 
 
 class CareerSerializer(ModelSerializer):
