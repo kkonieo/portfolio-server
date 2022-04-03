@@ -6,10 +6,10 @@ from apps.tag.models import Position, Tech
 class TechSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tech
-        fields = ("name",)
+        fields = "__all__"
 
 
 class PositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
-        fields = ("name",)
+        fields = "__all__"

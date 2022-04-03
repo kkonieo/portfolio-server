@@ -135,9 +135,11 @@ class UserSerializer(ModelSerializer):
     user_introduction = serializers.CharField(source="introduction", allow_null=True)
 
     user_positions = PositionSerializer(
-        many=True, allow_null=True, required=False, read_only=True
+        source="positions", many=True, allow_null=True, required=False, read_only=True
     )
-    skills = TechSerializer(many=True, allow_null=True, required=False, read_only=True)
+    skills = TechSerializer(
+        source="tech", many=True, allow_null=True, required=False, read_only=True
+    )
     projects = SerializerMethodField(allow_null=True, read_only=True)
     user_links = SerializerMethodField(allow_null=True, read_only=True)
     careers = SerializerMethodField(allow_null=True, read_only=True)
