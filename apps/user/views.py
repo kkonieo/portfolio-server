@@ -20,8 +20,13 @@ from apps.project.models import Project
 from apps.project.serializers import ProjectSerializer
 from apps.tag.models import Position, Tech
 from apps.tag.serializers import PositionSerializer, TechSerializer
-from apps.user.models import Link, User
-from apps.user.serializers import LinkSerializer, UserListSerializer, UserSerializer
+from apps.user.models import Career, Link, User
+from apps.user.serializers import (
+    CareerSerializer,
+    LinkSerializer,
+    UserListSerializer,
+    UserSerializer,
+)
 
 
 class DecoratedTokenObtainPairView(TokenObtainPairView):
@@ -288,7 +293,32 @@ class UserView(APIView):
             link = Link(source=user_link, user=user)
             link.save()
 
-        # TODO: careers, educations, other_experiences, developed_functions 구현 - 위 project 구현 참고
+        # TODO: educations, other_experiences, developed_functions 구현 - 위 project 구현 참고
+        careers = data.get("careers")
+        if not careers:
+            return Response(
+                {"message": "must contain careers!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        careers = json.loads(careers)
+        career_serializer = CareerSerializer(data=careers, many=True)
+        if career_serializer.is_valid():
+            old_careers = Career.objects.filter(user=user)
+            old_careers.delete()
+            careers = career_serializer.save(user=user)
+            for career in careers:
+                positions = career.positions.all()
+                for position in positions:
+                    career.positions.add(position)
+                career_tech_stacks = career.tech.all()
+                for career_tech_stack in career_tech_stacks:
+                    career.tech.add(career_tech_stack)
+                career.save()
+
+        else:
+            return Response(
+                career_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
         serializer = UserSerializer(user, data=request.data)
         if serializer.is_valid():

@@ -115,7 +115,7 @@ class CareerSerializer(ModelSerializer):
 
     class Meta:
         model = Career
-        fields = "__all__"
+        fields = ("company", "positions", "tech")
 
 
 class ListingField(serializers.RelatedField):
