@@ -264,8 +264,7 @@ class UserView(APIView):
             projects = json.loads(projects)
             project_serializer = ProjectSerializer(data=projects, many=True)
             if project_serializer.is_valid():
-                old_projects = Project.objects.filter(author=user)
-                old_projects.delete()
+                Project.objects.filter(author=user).delete()
                 projects = project_serializer.save(author=user)
                 for project in projects:
                     project_likers = project.liker.all()
@@ -295,8 +294,7 @@ class UserView(APIView):
             careers = json.loads(careers)
             career_serializer = CareerSerializer(data=careers, many=True)
             if career_serializer.is_valid():
-                old_careers = Career.objects.filter(user=user)
-                old_careers.delete()
+                Career.objects.filter(user=user).delete()
                 careers = career_serializer.save(user=user)
                 for career in careers:
                     positions = career.positions.all()
@@ -317,8 +315,7 @@ class UserView(APIView):
             educations = json.loads(educations)
             education_serializer = EducationSerializer(data=educations, many=True)
             if education_serializer.is_valid():
-                old_educations = Education.objects.filter(user=user)
-                old_educations.delete()
+                Education.objects.filter(user=user).delete()
                 educations = education_serializer.save(user=user)
 
             else:
@@ -333,8 +330,7 @@ class UserView(APIView):
                 data=other_experiences, many=True
             )
             if other_experience_serializer.is_valid():
-                old_other_experience = OtherExperience.objects.filter(user=user)
-                old_other_experience.delete()
+                OtherExperience.objects.filter(user=user).delete()
                 other_experiences = other_experience_serializer.save(user=user)
                 for other_experience in other_experiences:
                     other_experience_tech = other_experience.tech.all()
@@ -355,8 +351,7 @@ class UserView(APIView):
                 data=developed_functions, many=True
             )
             if developed_function_serializer.is_valid():
-                old_developed_functions = DevelopedFunction.objects.filter(user=user)
-                old_developed_functions.delete()
+                DevelopedFunction.objects.filter(user=user).delete()
                 developed_functions = developed_function_serializer.save(user=user)
 
             else:
