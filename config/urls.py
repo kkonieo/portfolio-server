@@ -18,12 +18,16 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
+app_urls = [
     path("users/", include("apps.user.urls")),
     path("projects", include("apps.project.urls")),
     path("core/", include("apps.core.urls")),
     # path("posts/", include("apps.post.urls")),
+]
+
+urlpatterns = [
+    path("api/", include(app_urls)),
+    path("admin/", admin.site.urls),
 ]
 
 if settings.DEBUG:
