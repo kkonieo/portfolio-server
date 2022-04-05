@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.core.models import Image
-from config.settings.base import MEDIA_URL
 
 
 # Create your views here.
@@ -18,8 +17,9 @@ class ImageView(APIView):
         if image:
             image = Image(source=image)
             image.save()
+            print(image)
             return Response(
-                {"image_source": MEDIA_URL + image.source.name},
+                {"image_source": image.source.name},
                 status=status.HTTP_201_CREATED,
             )
         else:

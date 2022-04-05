@@ -42,4 +42,4 @@ class Image(TimeStampModel):
         db_table = "image"
 
     def __str__(self):
-        return self.source.name
+        return self.source.url

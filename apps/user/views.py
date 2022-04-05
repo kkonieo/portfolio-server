@@ -16,6 +16,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from apps.core.models import Image
+from apps.core.serializers import ImageSerializer
 from apps.project.models import Project
 from apps.project.serializers import ProjectSerializer
 from apps.tag.models import Position, Tech
@@ -196,13 +197,10 @@ class UserView(APIView):
         if hobby:
             user.hobby = hobby
 
-        user_image = request.FILES.get("user_image")
+        user_image = data.get("user_image")
         if user_image:
-            user_image = Image(source=user_image)
-            user_image.save()
+            user_image = Image.objects.filter(source=user_image).first()
             user.user_image = user_image
-
-            # data["user_image"] = user_image.source
 
         user_positions = data.get("user_positions")
         if user_positions:
