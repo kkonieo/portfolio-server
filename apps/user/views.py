@@ -16,7 +16,6 @@ from rest_framework_simplejwt.views import (
 )
 
 from apps.core.models import Image
-from apps.core.serializers import ImageSerializer
 from apps.project.models import Project
 from apps.project.serializers import ProjectSerializer
 from apps.tag.models import Position, Tech
@@ -161,8 +160,6 @@ class UserView(APIView):
     회원 정보 REST API
     """
 
-    parser_classes = (FormParser, MultiPartParser)
-
     # permission_classes = [IsAuthenticated]
 
     def get(self, request, slug):
@@ -177,7 +174,7 @@ class UserView(APIView):
         """
         사용자 정보 업데이트.
         """
-        data = request.POST
+        data = request.data
 
         user = User.objects.filter(slug=slug).first()
 
@@ -204,7 +201,6 @@ class UserView(APIView):
 
         user_positions = data.get("user_positions")
         if user_positions:
-            user_positions = json.loads(user_positions)
             positions = []
             for t in user_positions:
                 position_name = t.get("name")
@@ -229,7 +225,6 @@ class UserView(APIView):
 
         skills = data.get("skills")
         if skills:
-            skills = json.loads(skills)
             tech = []
             for skill in skills:
                 skill_name = skill.get("name")
@@ -259,7 +254,6 @@ class UserView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         if projects:
-            projects = json.loads(projects)
             project_serializer = ProjectSerializer(data=projects, many=True)
             if project_serializer.is_valid():
                 Project.objects.filter(author=user).delete()
@@ -281,7 +275,6 @@ class UserView(APIView):
         # user links
         user_links = data.get("user_links")
         if user_links:
-            user_links = json.loads(user_links)
             Link.objects.filter(user=user).delete()
             for user_link in user_links:
                 link = Link(source=user_link, user=user)
@@ -289,7 +282,6 @@ class UserView(APIView):
 
         careers = data.get("careers")
         if careers:
-            careers = json.loads(careers)
             career_serializer = CareerSerializer(data=careers, many=True)
             if career_serializer.is_valid():
                 Career.objects.filter(user=user).delete()
@@ -310,7 +302,6 @@ class UserView(APIView):
 
         educations = data.get("educations")
         if educations:
-            educations = json.loads(educations)
             education_serializer = EducationSerializer(data=educations, many=True)
             if education_serializer.is_valid():
                 Education.objects.filter(user=user).delete()
@@ -323,7 +314,6 @@ class UserView(APIView):
 
         other_experiences = data.get("other_experiences")
         if other_experiences:
-            other_experiences = json.loads(other_experiences)
             other_experience_serializer = OtherExperienceSerializer(
                 data=other_experiences, many=True
             )
@@ -344,7 +334,6 @@ class UserView(APIView):
 
         developed_functions = data.get("developed_functions")
         if developed_functions:
-            developed_functions = json.loads(developed_functions)
             developed_function_serializer = DevelopedFunctionSerializer(
                 data=developed_functions, many=True
             )
