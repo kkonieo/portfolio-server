@@ -27,8 +27,10 @@ SITE_ID = 1
 
 ...
 # django-allauth setting
-LOGIN_REDIRECT_URL ='www.naver.com'            # 로그인 후 리다이렉트 할 페이지
-ACCOUNT_LOGOUT_REDIRECT_URL = 'www.naver.com'  # 로그아웃 후 리다이렉트
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+LOGIN_REDIRECT_URL = "/"                        # 로그인 후 리다이렉트 할 페이지
+ACCOUNT_AUTHENTICATED_LOGOUT_REDIRECTS = True
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"               # 로그아웃 후 리다이렉트
 
 # base directory
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
