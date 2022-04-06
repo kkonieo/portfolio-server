@@ -1,7 +1,6 @@
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.db import models
-from pyexpat import model
 
 from apps.core.models import DurationModel, Image, TimeStampModel
 from apps.core.utility import generate_random_string

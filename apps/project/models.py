@@ -42,6 +42,13 @@ class Project(TimeStampModel, DurationModel):
         null=True,
         blank=True,
     )
+    images = models.ManyToManyField(
+        Image,
+        verbose_name="프로젝트 이미지",
+        related_name="project_image",
+        null=True,
+        blank=True,
+    )
     liker = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         verbose_name="프로젝트에 좋아요 남긴 사용자들",
