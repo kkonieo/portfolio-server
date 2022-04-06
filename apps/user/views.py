@@ -202,42 +202,42 @@ class UserView(APIView):
         user_positions = data.get("user_positions")
         if user_positions:
             positions = []
-            for t in user_positions:
-                position_name = t.get("name")
-                if not position_name:
+            for position in user_positions:
+                position_id = position.get("id")
+                if not position_id:
                     return Response(
-                        {"message": "user_positions must contain name!"},
+                        {"message": "user_positions must contain id!"},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
                 else:
-                    t = Position.objects.filter(name=position_name).first()
-                    if not t:
+                    position = Position.objects.filter(id=position_id).first()
+                    if not position:
                         return Response(
-                            {"message": "invalid position name"},
+                            {"message": "invalid position id"},
                             status=status.HTTP_400_BAD_REQUEST,
                         )
                     else:
-                        positions.append(t)
+                        positions.append(position)
             user.positions.clear()
-            for t in positions:
-                user.positions.add(t)
+            for position in positions:
+                user.positions.add(position)
             user.save()
 
         skills = data.get("skills")
         if skills:
             tech = []
             for skill in skills:
-                skill_name = skill.get("name")
-                if not skill_name:
+                skill_id = skill.get("id")
+                if not skill_id:
                     return Response(
-                        {"message": "skills must contain name!"},
+                        {"message": "skills must contain id!"},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
                 else:
-                    t = Tech.objects.filter(name=skill_name).first()
+                    t = Tech.objects.filter(id=skill_id).first()
                     if not t:
                         return Response(
-                            {"message": "invalid position name"},
+                            {"message": "invalid skill id"},
                             status=status.HTTP_400_BAD_REQUEST,
                         )
                     else:
