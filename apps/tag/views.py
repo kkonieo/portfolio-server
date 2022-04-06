@@ -18,7 +18,11 @@ class TechView(APIView):
 
         if not keyword:
             tech = Tech.objects.all()
-            serializer = TechSerializer(tech, many=True)
-            return Response(serializer.data)
         else:
-            keyword = keyword.lower()
+            tech = Tech.objects.filter(name__icontains=keyword)
+            if not tech:
+                return Response(
+                    {"message": "wrong input"}, status=status.HTTP_400_BAD_REQUEST
+                )
+        serializer = TechSerializer(tech, many=True)
+        return Response(serializer.data)
