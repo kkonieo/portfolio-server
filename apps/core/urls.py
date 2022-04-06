@@ -1,7 +1,7 @@
 from django.urls import path
 
-from . import views
+from apps.core.views import ImageView
 
 urlpatterns = [
-    path("image", views.ImageView.as_view()),
+    path("image", ImageView.as_view()),
 ]
