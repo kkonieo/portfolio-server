@@ -6,7 +6,7 @@ from rest_framework.serializers import (
 )
 
 from apps.project.models import Project
-from apps.project.serializers import ProjectSerializer
+from apps.project.serializers import ProjectInfoSerializer, ProjectSerializer
 from apps.tag.models import Position, Tech
 from apps.tag.serializers import PositionSerializer, TechSerializer
 from apps.user.models import (
@@ -99,7 +99,14 @@ class EducationSerializer(ModelSerializer):
 
     class Meta:
         model = Education
-        fields = ("school", "status", "department", "gpa")
+        fields = (
+            "school",
+            "status",
+            "department",
+            "gpa",
+            "started_at",
+            "ended_at",
+        )
 
 
 class OtherExperienceSerializer(ModelSerializer):
@@ -107,7 +114,17 @@ class OtherExperienceSerializer(ModelSerializer):
 
     class Meta:
         model = OtherExperience
-        fields = ("title", "achievement", "tech")
+        fields = (
+            "title",
+            "achievement",
+            "tech",
+            "started_at",
+            "ended_at",
+        )
+
+
+class OtherExperienceInfoSerializer(OtherExperienceSerializer):
+    tech = TechSerializer(many=True, allow_null=True, required=False, read_only=True)
 
 
 class CareerSerializer(ModelSerializer):
@@ -115,7 +132,20 @@ class CareerSerializer(ModelSerializer):
 
     class Meta:
         model = Career
-        fields = ("company", "positions", "tech")
+        fields = (
+            "company",
+            "positions",
+            "tech",
+            "started_at",
+            "ended_at",
+        )
+
+
+class CareerInfoSerializer(CareerSerializer):
+    positions = PositionSerializer(
+        many=True, allow_null=True, required=False, read_only=True
+    )
+    tech = TechSerializer(many=True, allow_null=True, required=False, read_only=True)
 
 
 class ListingField(serializers.RelatedField):
@@ -133,13 +163,6 @@ class UserSerializer(ModelSerializer):
         read_only=True,
     )
     user_introduction = serializers.CharField(source="introduction", allow_null=True)
-
-    user_positions = PositionSerializer(
-        source="positions", many=True, allow_null=True, required=False, read_only=True
-    )
-    skills = TechSerializer(
-        source="tech", many=True, allow_null=True, required=False, read_only=True
-    )
     projects = SerializerMethodField(allow_null=True, read_only=True)
     user_links = SerializerMethodField(allow_null=True, read_only=True)
     careers = SerializerMethodField(allow_null=True, read_only=True)
@@ -159,7 +182,7 @@ class UserSerializer(ModelSerializer):
 
     def get_projects(self, obj):
         projects = Project.objects.filter(author=obj)
-        serializer = ProjectSerializer(
+        serializer = ProjectInfoSerializer(
             projects,
             many=True,
             allow_null=True,
@@ -169,7 +192,7 @@ class UserSerializer(ModelSerializer):
 
     def get_careers(self, obj):
         careers = Career.objects.filter(user=obj)
-        serializer = CareerSerializer(
+        serializer = CareerInfoSerializer(
             careers,
             many=True,
             allow_null=True,
@@ -189,7 +212,7 @@ class UserSerializer(ModelSerializer):
 
     def get_other_experiences(self, obj):
         other_experiences = OtherExperience.objects.filter(user=obj)
-        serializer = OtherExperienceSerializer(
+        serializer = OtherExperienceInfoSerializer(
             other_experiences,
             many=True,
             allow_null=True,
@@ -222,8 +245,8 @@ class UserSerializer(ModelSerializer):
             "user_introduction",
             "hobby",
             "expected_salary",
-            "user_positions",
-            "skills",
+            "positions",
+            "tech",
             "projects",
             "user_links",
             "careers",
@@ -231,3 +254,10 @@ class UserSerializer(ModelSerializer):
             "other_experiences",
             "developed_functions",
         )
+
+
+class UserInfoSerializer(UserSerializer):
+    positions = PositionSerializer(
+        many=True, allow_null=True, required=False, read_only=True
+    )
+    tech = TechSerializer(many=True, allow_null=True, required=False, read_only=True)

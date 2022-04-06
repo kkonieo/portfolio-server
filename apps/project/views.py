@@ -87,7 +87,7 @@ class ProjectsView(BaseProjectsView):
             project = Project()
             project.author = user
             project.title = validated_data["title"]
-            project.tech_stack = validated_data["tech_stack"]
+            project.tech = validated_data["tech_stack"]
             project.thumbnail = validated_data["thumbnail"]
             project.content = validated_data["content"]
 

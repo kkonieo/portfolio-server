@@ -49,10 +49,10 @@ class Project(TimeStampModel, DurationModel):
         null=True,
         blank=True,
     )
-    tech_stack = models.ManyToManyField(
+    tech = models.ManyToManyField(
         Tech,
         verbose_name="기술 목록",
-        related_name="project_tech_stack",
+        related_name="project_tech",
         null=True,
         blank=True,
     )

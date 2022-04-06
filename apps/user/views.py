@@ -3,6 +3,7 @@ import json
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import render
+from django.utils.dateparse import parse_date
 from rest_framework import status
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
@@ -34,6 +35,7 @@ from apps.user.serializers import (
     EducationSerializer,
     LinkSerializer,
     OtherExperienceSerializer,
+    UserInfoSerializer,
     UserListSerializer,
     UserSerializer,
 )
@@ -174,181 +176,101 @@ class UserView(APIView):
         """
         사용자 정보 업데이트.
         """
-        data = request.data
+        user_info_serializer = request.data
 
         user = User.objects.filter(slug=slug).first()
+        user_serializer = UserSerializer(user, data=request.data)
+        if user_serializer.is_valid():
+            user_serializer.save()
 
-        user_name = data.get("user_name")
-        if user_name:
-            user.name = user_name
+            user_image = user_info_serializer.get("user_image")
+            if user_image:
+                user_image = Image.objects.filter(source=user_image).first()
+                user.user_image = user_image
 
-        user_introduction = data.get("user_introduction")
-        if user_introduction:
-            user.introduction = user_introduction
-
-        expected_salary = data.get("expected_salary")
-        if expected_salary:
-            user.expected_salary = expected_salary
-
-        hobby = data.get("hobby")
-        if hobby:
-            user.hobby = hobby
-
-        user_image = data.get("user_image")
-        if user_image:
-            user_image = Image.objects.filter(source=user_image).first()
-            user.user_image = user_image
-
-        user_positions = data.get("user_positions")
-        if user_positions:
-            positions = []
-            for position in user_positions:
-                position_id = position.get("id")
-                if not position_id:
-                    return Response(
-                        {"message": "user_positions must contain id!"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                else:
-                    position = Position.objects.filter(id=position_id).first()
-                    if not position:
-                        return Response(
-                            {"message": "invalid position id"},
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
-                    else:
-                        positions.append(position)
-            user.positions.clear()
-            for position in positions:
-                user.positions.add(position)
-            user.save()
-
-        skills = data.get("skills")
-        if skills:
-            tech = []
-            for skill in skills:
-                skill_id = skill.get("id")
-                if not skill_id:
-                    return Response(
-                        {"message": "skills must contain id!"},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-                else:
-                    t = Tech.objects.filter(id=skill_id).first()
-                    if not t:
-                        return Response(
-                            {"message": "invalid skill id"},
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
-                    else:
-                        tech.append(t)
-            user.tech.clear()
-            for t in tech:
-                user.tech.add(t)
-            user.save()
-
-        projects = data.get("projects")
-        if not projects:
-            return Response(
-                {"message": "must contain projects!"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if projects:
-            project_serializer = ProjectSerializer(data=projects, many=True)
-            if project_serializer.is_valid():
-                Project.objects.filter(author=user).delete()
-                projects = project_serializer.save(author=user)
-                for project in projects:
-                    project_likers = project.liker.all()
-                    for project_liker in project_likers:
-                        project.likers.add(project_liker)
-                    project_tech_stacks = project.tech_stack.all()
-                    for project_tech_stack in project_tech_stacks:
-                        project.tech_stack.add(project_tech_stack)
-                    project.save()
-
-            else:
+            projects = user_info_serializer.get("projects")
+            if not projects:
                 return Response(
-                    project_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                )
-
-        # user links
-        user_links = data.get("user_links")
-        if user_links:
-            Link.objects.filter(user=user).delete()
-            for user_link in user_links:
-                link = Link(source=user_link, user=user)
-                link.save()
-
-        careers = data.get("careers")
-        if careers:
-            career_serializer = CareerSerializer(data=careers, many=True)
-            if career_serializer.is_valid():
-                Career.objects.filter(user=user).delete()
-                careers = career_serializer.save(user=user)
-                for career in careers:
-                    positions = career.positions.all()
-                    for position in positions:
-                        career.positions.add(position)
-                    career_tech_stacks = career.tech.all()
-                    for career_tech_stack in career_tech_stacks:
-                        career.tech.add(career_tech_stack)
-                    career.save()
-
-            else:
-                return Response(
-                    career_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                )
-
-        educations = data.get("educations")
-        if educations:
-            education_serializer = EducationSerializer(data=educations, many=True)
-            if education_serializer.is_valid():
-                Education.objects.filter(user=user).delete()
-                educations = education_serializer.save(user=user)
-
-            else:
-                return Response(
-                    education_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                )
-
-        other_experiences = data.get("other_experiences")
-        if other_experiences:
-            other_experience_serializer = OtherExperienceSerializer(
-                data=other_experiences, many=True
-            )
-            if other_experience_serializer.is_valid():
-                OtherExperience.objects.filter(user=user).delete()
-                other_experiences = other_experience_serializer.save(user=user)
-                for other_experience in other_experiences:
-                    other_experience_tech = other_experience.tech.all()
-                    for other_experience_t in other_experience_tech:
-                        other_experience.tech.add(other_experience_t)
-                    other_experience.save()
-
-            else:
-                return Response(
-                    other_experience_serializer.errors,
+                    {"message": "must contain projects!"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            if projects:
+                project_serializer = ProjectSerializer(data=projects, many=True)
+                if project_serializer.is_valid():
+                    Project.objects.filter(author=user).delete()
+                    projects = project_serializer.save(author=user)
 
-        developed_functions = data.get("developed_functions")
-        if developed_functions:
-            developed_function_serializer = DevelopedFunctionSerializer(
-                data=developed_functions, many=True
-            )
-            if developed_function_serializer.is_valid():
-                DevelopedFunction.objects.filter(user=user).delete()
-                developed_functions = developed_function_serializer.save(user=user)
+                else:
+                    return Response(
+                        project_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
 
-            else:
-                return Response(
-                    developed_function_serializer.errors,
-                    status=status.HTTP_400_BAD_REQUEST,
+            # user links
+            user_links = user_info_serializer.get("user_links")
+            if user_links:
+                Link.objects.filter(user=user).delete()
+                for user_link in user_links:
+                    link = Link(source=user_link, user=user)
+                    link.save()
+
+            careers = user_info_serializer.get("careers")
+            if careers:
+                career_serializer = CareerSerializer(data=careers, many=True)
+                if career_serializer.is_valid():
+                    Career.objects.filter(user=user).delete()
+                    careers = career_serializer.save(user=user)
+
+                else:
+                    return Response(
+                        career_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            educations = user_info_serializer.get("educations")
+            if educations:
+                education_serializer = EducationSerializer(data=educations, many=True)
+                if education_serializer.is_valid():
+                    Education.objects.filter(user=user).delete()
+                    educations = education_serializer.save(user=user)
+
+                else:
+                    return Response(
+                        education_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            other_experiences = user_info_serializer.get("other_experiences")
+            if other_experiences:
+                other_experience_serializer = OtherExperienceSerializer(
+                    data=other_experiences, many=True
                 )
+                if other_experience_serializer.is_valid():
+                    OtherExperience.objects.filter(user=user).delete()
+                    other_experiences = other_experience_serializer.save(user=user)
 
-        serializer = UserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(
+                        other_experience_serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+            developed_functions = user_info_serializer.get("developed_functions")
+            if developed_functions:
+                developed_function_serializer = DevelopedFunctionSerializer(
+                    data=developed_functions, many=True
+                )
+                if developed_function_serializer.is_valid():
+                    DevelopedFunction.objects.filter(user=user).delete()
+                    developed_functions = developed_function_serializer.save(user=user)
+
+                else:
+                    return Response(
+                        developed_function_serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+            user_info_serializer = UserInfoSerializer(user, data=user_serializer.data)
+            if user_info_serializer.is_valid():
+                return Response(user_info_serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                user_info_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
