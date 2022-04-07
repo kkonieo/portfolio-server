@@ -10,6 +10,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 import json
+import sys
 env = os.environ
 
 # ------------------------------------------------
@@ -48,7 +49,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 #         error_msg = "Set the {} environment variable".format(setting)
 #         raise ImproperlyConfigured(error_msg)
 
-SECRET_KEY = "SECRET_KEY"
+ROOT_DIR = os.path.dirname(BASE_DIR)
+SECRET_BASE_FILE = os.path.join(BASE_DIR, 'secrets.json')
+
+secrets = json.loads(open(SECRET_BASE_FILE).read())
+for key, value in secrets.items():
+    setattr(sys.modules[__name__], key, value)
+
+# SECRET_KEY = "SECRET_KEY"
 #SECRET_KEY = get_secret("SECRET_KEY")
 
 # static directory
@@ -105,10 +113,16 @@ DJANGO_APPS = [
 
 # 써드파티 라이브러리
 THIRD_PARTY_APPS = [
+    # django-rest-framework
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",  # token blacklist
     'django.contrib.sites',
+    'rest_framework.authtoken',
+    # dj-rest-auth
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    # django-allauth
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -191,9 +205,22 @@ USE_TZ = True
 # Thrid Party
 # ------------------------------------------------
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    ),
+}
+
+REST_USE_JWT = True
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 
 # DRF simplejwt 설정
@@ -218,3 +245,8 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(hours=1),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None # username 필드 사용 x
+ACCOUNT_EMAIL_REQUIRED = True            # email 필드 사용 o
+ACCOUNT_USERNAME_REQUIRED = False        # username 필드 사용 x
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
