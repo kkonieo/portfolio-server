@@ -9,7 +9,7 @@ from apps.project.models import Project
 
 
 # Create your views here.
-class CommentView(APIView):
+class CommentListView(APIView):
     """
     댓글 API
     """
@@ -30,10 +30,22 @@ class CommentView(APIView):
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+
         project = Project.objects.filter(id=project_id).first()
         print(project)
         if project:
             serializer.save(author=self.request.user, project=project)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentView(APIView):
+    """
+    댓글 수정, 삭제 API
+    """
+    def delete(self, request, project_id, comment_id):
+        comment = Comment.objects.filter(id=comment_id).first()
+        if not comment:
+            return Response({"message": "no right comment"}, status=status.HTTP_400_BAD_REQUEST)
+        comment.delete()
+        return Response({"message": "successfully deleted."})
