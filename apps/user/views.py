@@ -1,11 +1,6 @@
-import json
-
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
-from django.shortcuts import render
-from django.utils.dateparse import parse_date
 from rest_framework import status
-from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -20,7 +15,6 @@ from apps.core.models import Image
 from apps.project.models import Project
 from apps.project.serializers import ProjectSerializer
 from apps.tag.models import Position, Tech
-from apps.tag.serializers import PositionSerializer, TechSerializer
 from apps.user.models import (
     Career,
     DevelopedFunction,
@@ -211,7 +205,6 @@ class UserView(APIView):
                                     image = Image.objects.filter(source=image).first()
                                     new_projects[i].images.add(image)
                             new_projects[i].save()
-                   
                 else:
                     return Response(
                         project_serializer.errors, status=status.HTTP_400_BAD_REQUEST

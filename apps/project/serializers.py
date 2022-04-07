@@ -57,7 +57,7 @@ class ProjectSerializer(RawProjectSerializer):
         # strip_string = normalize_newlines(strip_string)
         # strip_string = strip_string.replace("\n", " ")
         return strip_string
-        
+
 
 class ProjectInfoSerializer(ProjectSerializer):
     tech = TechSerializer(many=True, allow_null=True, required=False, read_only=True)
