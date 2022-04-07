@@ -163,26 +163,26 @@ class UserView(APIView):
         사용자 상세 정보 반환
         """
         user = User.objects.filter(slug=slug).first()
-        serializer = UserSerializer(user)
+        serializer = UserInfoSerializer(user)
         return Response(serializer.data)
 
     def put(self, request, slug):
         """
         사용자 정보 업데이트.
         """
-        user_info_serializer = request.data
+        user_info = request.data
 
         user = User.objects.filter(slug=slug).first()
         user_serializer = UserSerializer(user, data=request.data)
         if user_serializer.is_valid():
             user_serializer.save()
 
-            user_image = user_info_serializer.get("user_image")
+            user_image = user_info.get("user_image")
             if user_image:
                 user_image = Image.objects.filter(source=user_image).first()
                 user.user_image = user_image
 
-            projects = user_info_serializer.get("projects")
+            projects = user_info.get("projects")
             if not projects:
                 return Response(
                     {"message": "must contain projects!"},
@@ -211,14 +211,14 @@ class UserView(APIView):
                     )
 
             # user links
-            user_links = user_info_serializer.get("user_links")
+            user_links = user_info.get("user_links")
             if user_links:
                 Link.objects.filter(user=user).delete()
                 for user_link in user_links:
                     link = Link(source=user_link, user=user)
                     link.save()
 
-            careers = user_info_serializer.get("careers")
+            careers = user_info.get("careers")
             if careers:
                 career_serializer = CareerSerializer(data=careers, many=True)
                 if career_serializer.is_valid():
@@ -230,7 +230,7 @@ class UserView(APIView):
                         career_serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
 
-            educations = user_info_serializer.get("educations")
+            educations = user_info.get("educations")
             if educations:
                 education_serializer = EducationSerializer(data=educations, many=True)
                 if education_serializer.is_valid():
@@ -242,7 +242,7 @@ class UserView(APIView):
                         education_serializer.errors, status=status.HTTP_400_BAD_REQUEST
                     )
 
-            other_experiences = user_info_serializer.get("other_experiences")
+            other_experiences = user_info.get("other_experiences")
             if other_experiences:
                 other_experience_serializer = OtherExperienceSerializer(
                     data=other_experiences, many=True
@@ -257,7 +257,7 @@ class UserView(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-            developed_functions = user_info_serializer.get("developed_functions")
+            developed_functions = user_info.get("developed_functions")
             if developed_functions:
                 developed_function_serializer = DevelopedFunctionSerializer(
                     data=developed_functions, many=True

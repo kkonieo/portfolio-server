@@ -2,6 +2,7 @@ from django.utils.html import strip_tags
 from django.utils.text import normalize_newlines
 from rest_framework import serializers
 
+from apps.tag.serializers import TechSerializer
 from apps.user.models import User
 
 from .models import Project
@@ -22,8 +23,8 @@ class RawProjectSerializer(serializers.ModelSerializer):
     프로젝트
     """
 
-    thumbnail = serializers.ImageField(source="thumbnail.source")
-    likers = LikerSerializer(source="liker", many=True)
+    thumbnail = serializers.ImageField(source="thumbnail.source", read_only=True)
+    likers = LikerSerializer(source="liker", many=True, read_only=True)
     user_slug = serializers.CharField(source="author.slug", read_only=True)
 
     class Meta:
@@ -34,7 +35,7 @@ class RawProjectSerializer(serializers.ModelSerializer):
             "title",
             "content",
             "thumbnail",
-            "tech_stack",
+            "tech",
             "likers",
         )
 
@@ -51,6 +52,10 @@ class ProjectSerializer(RawProjectSerializer):
         # strip_string = normalize_newlines(strip_string)
         # strip_string = strip_string.replace("\n", " ")
         return strip_string
+
+
+class ProjectInfoSerializer(ProjectSerializer):
+    tech = TechSerializer(many=True, allow_null=True, required=False, read_only=True)
 
 
 class ProjectSummarySerializer(RawProjectSerializer):
