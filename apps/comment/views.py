@@ -1,3 +1,5 @@
+from os import stat
+
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
@@ -32,10 +34,9 @@ class CommentListView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         project = Project.objects.filter(id=project_id).first()
-        print(project)
         if project:
             serializer.save(author=self.request.user, project=project)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -46,6 +47,16 @@ class CommentView(APIView):
     def delete(self, request, project_id, comment_id):
         comment = Comment.objects.filter(id=comment_id).first()
         if not comment:
-            return Response({"message": "no right comment"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "no comment"}, status=status.HTTP_400_BAD_REQUEST)
         comment.delete()
         return Response({"message": "successfully deleted."})
+
+    def put(self, request, project_id, comment_id):
+        comment = Comment.objects.filter(id=comment_id).first()
+        if not comment:
+            return Response({"message": "no comment"}, status=status.HTTP_400_BAD_REQUEST)
+        if comment.author != self.request.user:
+            return Response({"message": "no authorization"}, status=status.HTTP_401_UNAUTHORIZED)
+        comment.content = request.data.get("content")
+        comment.save()
+        return Response({"message": "successfully changed"})
