@@ -5,6 +5,9 @@ from .views import (
     DecoratedTokenObtainPairView,
     DecoratedTokenRefreshView,
     DecoratedTokenVerifyView,
+    DeveloperListView,
+    UserListView,
+    UserView,
 )
 
 urlpatterns = [
@@ -27,5 +30,20 @@ urlpatterns = [
         "token/verify",
         DecoratedTokenVerifyView.as_view(),
         name="user_token_verify",
+    ),
+    path(
+        "",
+        UserListView.as_view(),
+        name="user_list",
+    ),
+    path(
+        "developers",
+        DeveloperListView.as_view(),
+        name="developer_list",
+    ),
+    path(
+        "<str:slug>",
+        UserView.as_view(),
+        name="user",
     ),
 ]

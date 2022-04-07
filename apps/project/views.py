@@ -21,9 +21,9 @@ class BaseProjectsView(APIView):
     serializer = RawProjectSerializer
     count = 10
     page = 1
-    permission_classes = [
-        IsAuthenticatedOrReadOnly,
-    ]
+    # permission_classes = [
+    #     IsAuthenticatedOrReadOnly,
+    # ]
 
     def set_to_show_summary(self, query):
         short = query.get("short")
@@ -87,7 +87,7 @@ class ProjectsView(BaseProjectsView):
             project = Project()
             project.author = user
             project.title = validated_data["title"]
-            project.tech_stack = validated_data["tech_stack"]
+            project.tech = validated_data["tech_stack"]
             project.thumbnail = validated_data["thumbnail"]
             project.content = validated_data["content"]
 

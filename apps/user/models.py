@@ -1,7 +1,6 @@
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.db import models
-from pyexpat import model
 
 from apps.core.models import DurationModel, Image, TimeStampModel
 from apps.core.utility import generate_random_string
@@ -94,12 +93,14 @@ class User(AbstractBaseUser, TimeStampModel, PermissionsMixin):
         verbose_name="포지션",
         related_name="users",
         blank=True,
+        null=True,
     )
     tech = models.ManyToManyField(
         Tech,
         verbose_name="기술 목록",
         related_name="users",
         blank=True,
+        null=True,
     )
 
     objects = CustomUserManager()
@@ -171,7 +172,7 @@ class Education(DurationModel, TimeStampModel):
     )
 
 
-class Functions(TimeStampModel):
+class DevelopedFunction(TimeStampModel):
     """
     개발 기능
     """

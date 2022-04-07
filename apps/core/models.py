@@ -26,8 +26,8 @@ class DurationModel(models.Model):
     시작일, 종료일 필드를 포함하는 추상 모델
     """
 
-    started_at = models.DateTimeField(verbose_name="시작일", blank=True, null=True)
-    ended_at = models.DateTimeField(verbose_name="종료일", blank=True, null=True)
+    started_at = models.DateField(verbose_name="시작일", blank=True, null=True)
+    ended_at = models.DateField(verbose_name="종료일", blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -42,4 +42,4 @@ class Image(TimeStampModel):
         db_table = "image"
 
     def __str__(self):
-        return self.source.name
+        return self.source.url
