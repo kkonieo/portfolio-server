@@ -198,8 +198,20 @@ class UserView(APIView):
                 project_serializer = ProjectSerializer(data=projects, many=True)
                 if project_serializer.is_valid():
                     Project.objects.filter(author=user).delete()
-                    projects = project_serializer.save(author=user)
-
+                    new_projects = project_serializer.save(author=user)
+                    if projects:
+                        for i in range(len(new_projects)):
+                            thumbnail = projects[i].get("thumbnail")
+                            if thumbnail:
+                                thumbnail = Image.objects.filter(source=thumbnail).first()
+                                new_projects[i].thumbnail = thumbnail
+                            images = projects[i].get("images")
+                            if images:
+                                for image in images:
+                                    image = Image.objects.filter(source=image).first()
+                                    new_projects[i].images.add(image)
+                            new_projects[i].save()
+                   
                 else:
                     return Response(
                         project_serializer.errors, status=status.HTTP_400_BAD_REQUEST
