@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from apps.core.models import TimeStampModel
-from apps.post.models import Post
+from apps.project.models import Project
 
 
 class Comment(TimeStampModel):
@@ -17,11 +17,11 @@ class Comment(TimeStampModel):
         related_name="comment_author",
     )
     content = models.TextField(verbose_name="댓글 내용")
-    post = models.ForeignKey(
-        Post,
-        verbose_name="댓글이 속한 포스트",
+    project = models.ForeignKey(
+        Project,
+        verbose_name="댓글이 속한 프로젝트",
         on_delete=models.CASCADE,
-        related_name="comment_post",
+        related_name="comment_project",
     )
 
     class Meta:
