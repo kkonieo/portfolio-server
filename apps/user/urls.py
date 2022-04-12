@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from .views import (
     DecoratedTokenBlacklistView,
@@ -11,7 +11,7 @@ from .views import (
     UserView,
 )
 
-urlpatterns = [
+single_user_urls = [
     path(
         "register",
         UserRegisterView.as_view(),
@@ -37,6 +37,9 @@ urlpatterns = [
         DecoratedTokenVerifyView.as_view(),
         name="user_token_verify",
     ),
+]
+
+user_list_urls = [
     path(
         "",
         UserListView.as_view(),
@@ -52,4 +55,9 @@ urlpatterns = [
         UserView.as_view(),
         name="user",
     ),
+]
+
+urlpatterns = [
+    path("user/", include(single_user_urls)),
+    path("users/", include(user_list_urls)),
 ]

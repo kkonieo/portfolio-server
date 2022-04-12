@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 app_urls = [
-    path("users/", include("apps.user.urls")),
+    path("", include("apps.user.urls")),
     path("projects", include("apps.project.urls")),
     path("core/", include("apps.core.urls")),
     path("tag/", include("apps.tag.urls")),
