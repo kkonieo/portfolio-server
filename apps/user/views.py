@@ -80,19 +80,18 @@ class UserRegisterView(APIView):
     """
     회원 가입
     """
+
     def post(self, request):
 
         serializer = UserRegisterSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(
-                {"message": "wrong data"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"message": "wrong data"}, status=status.HTTP_400_BAD_REQUEST
             )
         user = User.objects.filter(email=serializer.validated_data["email"]).first()
         if user:
             return Response(
-                {"message": "email already exist"},
-                status=status.HTTP_400_BAD_REQUEST
+                {"message": "email already exist"}, status=status.HTTP_400_BAD_REQUEST
             )
         user = serializer.save()
         return Response({"user_slug": user.slug}, status=status.HTTP_201_CREATED)
@@ -220,7 +219,9 @@ class UserView(APIView):
                         for i in range(len(new_projects)):
                             thumbnail = projects[i].get("thumbnail")
                             if thumbnail:
-                                thumbnail = Image.objects.filter(source=thumbnail).first()
+                                thumbnail = Image.objects.filter(
+                                    source=thumbnail
+                                ).first()
                                 new_projects[i].thumbnail = thumbnail
                             images = projects[i].get("images")
                             if images:
