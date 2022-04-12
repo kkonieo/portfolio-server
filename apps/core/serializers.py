@@ -4,7 +4,6 @@ from apps.core.models import Image
 
 
 class ImageSerializer(ModelSerializer):
-
     class Meta:
         model = Image
         fields = ("source",)

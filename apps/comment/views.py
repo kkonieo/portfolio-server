@@ -15,6 +15,7 @@ class CommentListView(APIView):
     """
     댓글 API
     """
+
     def get(self, request, project_id):
         """
         프로젝트의 댓글 목록 조회
@@ -44,19 +45,26 @@ class CommentView(APIView):
     """
     댓글 수정, 삭제 API
     """
+
     def delete(self, request, project_id, comment_id):
         comment = Comment.objects.filter(id=comment_id).first()
         if not comment:
-            return Response({"message": "no comment"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "no comment"}, status=status.HTTP_400_BAD_REQUEST
+            )
         comment.delete()
         return Response({"message": "successfully deleted."})
 
     def put(self, request, project_id, comment_id):
         comment = Comment.objects.filter(id=comment_id).first()
         if not comment:
-            return Response({"message": "no comment"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "no comment"}, status=status.HTTP_400_BAD_REQUEST
+            )
         if comment.author != self.request.user:
-            return Response({"message": "no authorization"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"message": "no authorization"}, status=status.HTTP_401_UNAUTHORIZED
+            )
         comment.content = request.data.get("content")
         comment.save()
         return Response({"message": "successfully changed"})
