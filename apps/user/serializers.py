@@ -153,6 +153,26 @@ class ListingField(serializers.RelatedField):
         return value.name
 
 
+class UserRegisterSerializer(ModelSerializer):
+    email = serializers.EmailField(required=True)
+    user_name = serializers.CharField(source="name", required=True)
+    password = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ("email", "user_name", "password",)
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            email=validated_data['email'],
+            name=validated_data['name']
+        )
+        user.set_password(validated_data['password'])
+
+        user.save()
+        return user
+
+
 class UserSerializer(ModelSerializer):
     user_slug = serializers.CharField(source="slug", read_only=True)
     user_name = serializers.CharField(source="name", allow_null=True)

@@ -31,6 +31,7 @@ from apps.user.serializers import (
     OtherExperienceSerializer,
     UserInfoSerializer,
     UserListSerializer,
+    UserRegisterSerializer,
     UserSerializer,
 )
 
@@ -73,6 +74,28 @@ class DecoratedTokenVerifyView(TokenVerifyView):
         access 토큰을 전송하여 토큰이 유효한지 체크합니다.
         """
         return super().post(request, *args, **kwargs)
+
+
+class UserRegisterView(APIView):
+    """
+    회원 가입
+    """
+    def post(self, request):
+
+        serializer = UserRegisterSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {"message": "wrong data"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        user = User.objects.filter(email=serializer.validated_data["email"]).first()
+        if user:
+            return Response(
+                {"message": "email already exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        user = serializer.save()
+        return Response({"user_slug": user.slug}, status=status.HTTP_201_CREATED)
 
 
 class UserListView(APIView):

@@ -7,10 +7,16 @@ from .views import (
     DecoratedTokenVerifyView,
     DeveloperListView,
     UserListView,
+    UserRegisterView,
     UserView,
 )
 
 urlpatterns = [
+    path(
+        "register",
+        UserRegisterView.as_view(),
+        name="user_register",
+    ),
     path(
         "login",
         DecoratedTokenObtainPairView.as_view(),
