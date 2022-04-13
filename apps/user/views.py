@@ -27,7 +27,6 @@ from apps.user.serializers import (
     CareerSerializer,
     DevelopedFunctionSerializer,
     EducationSerializer,
-    LinkSerializer,
     OtherExperienceSerializer,
     UserInfoSerializer,
     UserListSerializer,
