@@ -152,11 +152,10 @@ class ProjectView(APIView):
 class LikeView(APIView):
 
     def get(self, request, project_id):
-        project_likers = Project.objects.get(pk=project_id).likers.all()
-        data = {
-            'project_likers' : project_likers
-        }
-        return Response(data)
+        project_likers = Project.objects.get(pk=project_id).liker.all()
+        serializer = LikerSerializer(project_likers, many=True)
+        
+        return  Response(serializer.data)
         
     def post(self, request, project_id):
         project = Project.objects.get(pk=project_id)

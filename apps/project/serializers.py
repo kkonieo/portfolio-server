@@ -15,7 +15,7 @@ class LikerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("slug", "name")
+        fields = ("slug",)
 
 
 class RawProjectSerializer(serializers.ModelSerializer):
