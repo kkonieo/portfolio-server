@@ -86,11 +86,3 @@ class Project(TimeStampModel, DurationModel):
 
     def __str__(self):
         return self.title
-
-# class Like(models.Model):
-#     liker = models.ForeignKey(User, on_delete=models.CASCADE)
-#     project = models.ForeignKey(
-#         Project, on_delete=models.CASCADE, related_name="likes")
-
-#     def __str__(self):
-#         return f"Like from {self.author} to {self.post}"

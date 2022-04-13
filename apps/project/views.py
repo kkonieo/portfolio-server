@@ -1,20 +1,21 @@
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Project
 from apps.user.models import User
 
+from .models import Project
 from .serializers import (
+    LikerSerializer,
     ProjectSerializer,
     ProjectSummarySerializer,
     RawProjectSerializer,
-    LikerSerializer
 )
 
 
-class ProjectsView(APIView):
+class ProjectListView(APIView):
     """
     Project List
     """
@@ -79,14 +80,15 @@ class ProjectView(APIView):
         return Response(serializer.data)
 
 
-class LikeView(APIView):
-
+class LikeListView(APIView):
     def get(self, request, project_id):
         project_likers = Project.objects.get(pk=project_id).liker.all()
         serializer = LikerSerializer(project_likers, many=True)
-        
-        return  Response(serializer.data)
-        
+
+        return Response(serializer.data)
+
+
+class LikeView(APIView):
     def post(self, request, project_id):
         project = Project.objects.get(pk=project_id)
         user = self.request.user
@@ -100,8 +102,5 @@ class LikeView(APIView):
         else:
             like = True
             project.liker.add(user)
-        data = {
-            'like': like
-        }
-        return Response(data)
-        
+        data = {"like": like}
+        return Response(data, status=status.HTTP_201_CREATED)
