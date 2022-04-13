@@ -39,7 +39,7 @@ SECRET_KEY = env.get("SECRET_KEY", "secret key here")
 ALLOWED_HOSTS = env.get("ALLOWED_HOSTS", [])
 
 # Debug 기본값 False
-DEBUG = False
+DEBUG = True
 
 
 AUTH_PASSWORD_VALIDATORS = [

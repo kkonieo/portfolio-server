@@ -4,10 +4,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Project
+from apps.user.models import User
+
 from .serializers import (
     ProjectSerializer,
     ProjectSummarySerializer,
     RawProjectSerializer,
+    LikerSerializer
 )
 
 
@@ -74,3 +77,31 @@ class ProjectView(APIView):
         serializer = ProjectSerializer(project)
 
         return Response(serializer.data)
+
+
+class LikeView(APIView):
+
+    def get(self, request, project_id):
+        project_likers = Project.objects.get(pk=project_id).liker.all()
+        serializer = LikerSerializer(project_likers, many=True)
+        
+        return  Response(serializer.data)
+        
+    def post(self, request, project_id):
+        project = Project.objects.get(pk=project_id)
+        user = self.request.user
+
+        print(f"project 입니다. : {project}")
+
+        # if user.is_authenticated:
+        if user in project.liker.all():
+            like = False
+            project.liker.remove(user)
+        else:
+            like = True
+            project.liker.add(user)
+        data = {
+            'like': like
+        }
+        return Response(data)
+        
