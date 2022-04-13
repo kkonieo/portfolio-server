@@ -5,13 +5,14 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Like, Project
+from .models import Project
 from apps.user.models import User
 
 from .serializers import (
     ProjectSerializer,
     ProjectSummarySerializer,
     RawProjectSerializer,
+    LikerSerializer
 )
 
 
@@ -161,13 +162,15 @@ class LikeView(APIView):
         project = Project.objects.get(pk=project_id)
         user = self.request.user
 
-        if user.is_authenticated:
-            if user in project.liker.all():
-                like = False
-                project.liker.remove(user)
-            else:
-                like = True
-                project.liker.add(user)
+        print(f"project 입니다. : {project}")
+
+        # if user.is_authenticated:
+        if user in project.liker.all():
+            like = False
+            project.liker.remove(user)
+        else:
+            like = True
+            project.liker.add(user)
         data = {
             'like': like
         }
