@@ -16,6 +16,7 @@ Pillow = "^9.0.0"
 djangorestframework-simplejwt = "^5.0.0"
 black = "^22.3.0"
 dj-database-url = "^0.5.0"
+whitenoise = "^6.0.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
