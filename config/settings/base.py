@@ -36,7 +36,8 @@ APPEND_SLASH = False
 # 보안
 # ------------------------------------------------
 SECRET_KEY = env.get("SECRET_KEY", "secret key here")
-ALLOWED_HOSTS = env.get("ALLOWED_HOSTS", [])
+# ALLOWED_HOSTS = env.get("ALLOWED_HOSTS", [])
+ALLOWED_HOSTS = ["*"]
 
 # Debug 기본값 False
 DEBUG = False
