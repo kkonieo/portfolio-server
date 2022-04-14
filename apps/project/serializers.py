@@ -15,7 +15,7 @@ class LikerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("slug", "name")
+        fields = ("slug",)
 
 
 class RawProjectSerializer(serializers.ModelSerializer):
@@ -26,6 +26,7 @@ class RawProjectSerializer(serializers.ModelSerializer):
     thumbnail = serializers.ImageField(source="thumbnail.source", read_only=True)
     likers = LikerSerializer(source="liker", many=True, read_only=True)
     user_slug = serializers.CharField(source="author.slug", read_only=True)
+    tech = TechSerializer(many=True, allow_null=True, required=False, read_only=True)
 
     class Meta:
         model = Project
@@ -39,18 +40,12 @@ class RawProjectSerializer(serializers.ModelSerializer):
             "likers",
         )
 
-    # def create(self, validated_data):
-
-    #     return super().create(validated_data)
-
 
 class ProjectSerializer(RawProjectSerializer):
     content = serializers.SerializerMethodField()
 
     def get_content(self, obj):
         strip_string = strip_tags(obj.content).strip()
-        # strip_string = normalize_newlines(strip_string)
-        # strip_string = strip_string.replace("\n", " ")
         return strip_string
 
 
