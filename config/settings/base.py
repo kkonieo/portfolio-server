@@ -20,8 +20,8 @@ env = os.environ
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # static directory
-STATIC_URL = "/staticfiles/"
-STATIC_ROOT = os.path.join(BASE_DIR, ".static")
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # media
 MEDIA_URL = "/media/"  # 웹 URL 을 통해 첨부파일에 점근할 수 있는 URL 경로입니다.
