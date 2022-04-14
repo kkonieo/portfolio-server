@@ -6,8 +6,7 @@ from rest_framework.serializers import (
 )
 
 from apps.project.models import Project
-from apps.project.serializers import ProjectInfoSerializer, ProjectSerializer
-from apps.tag.models import Position, Tech
+from apps.project.serializers import ProjectInfoSerializer
 from apps.tag.serializers import PositionSerializer, TechSerializer
 from apps.user.models import (
     Career,
