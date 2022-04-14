@@ -13,9 +13,11 @@ class LikerSerializer(serializers.ModelSerializer):
     좋아요 누른 사람 slug, name
     """
 
+    user_slug = serializers.CharField(source="slug", read_only=True)
+
     class Meta:
         model = User
-        fields = ("slug",)
+        fields = ("user_slug",)
 
 
 class RawProjectSerializer(serializers.ModelSerializer):
