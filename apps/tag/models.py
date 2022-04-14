@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Tech(models.Model):
-    name = models.CharField(verbose_name="기술", max_length=40, unique=True)
+    name = models.CharField(verbose_name="기술", max_length=100, unique=True)
 
     class Meta:
         verbose_name_plural = "기술"
@@ -16,7 +16,7 @@ class Tech(models.Model):
 
 class Position(models.Model):
 
-    name = models.CharField(verbose_name="포지션", max_length=30, unique=True)
+    name = models.CharField(verbose_name="포지션", max_length=100, unique=True)
 
     class Meta:
         verbose_name_plural = "포지션"
